@@ -39,7 +39,7 @@ public class MazeBuilder : MonoBehaviour
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
         }*/
 
-        // Instantiating full maze
+        // Instantiating full maze 
         for (int x = 0; x < numRows; x++)
         {
             for (int z = 0; z < numColumns; z++)
