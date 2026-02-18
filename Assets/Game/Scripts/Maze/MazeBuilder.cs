@@ -4,12 +4,12 @@ using UnityEngine;
 public class MazeBuilder : MonoBehaviour
 {
     [System.Serializable]
-    public struct Pair
+    public struct Dimension
     {
         public int width;
         public int height;
 
-        public Pair(int width, int height)
+        public Dimension(int width, int height)
         {
             this.width = width;
             this.height = height;
@@ -23,7 +23,7 @@ public class MazeBuilder : MonoBehaviour
     [SerializeField] int numRows = 5;
     [SerializeField] int numColumns = 5;
     [Header("Rooms")]
-    [SerializeField] List<Pair> roomDimensions;
+    [SerializeField] List<Dimension> roomDimensions;
     [Header("Dimensions")]
     [SerializeField] float wallLength = 9f;
     [SerializeField] float wallHeight = 5f;
@@ -35,7 +35,7 @@ public class MazeBuilder : MonoBehaviour
 
     private void Awake()
     {
-        roomDimensions = new List<Pair>();
+        roomDimensions = new List<Dimension>();
         maze = new Maze(numRows, numColumns);
         cellArray = maze.cellArray;
     }
