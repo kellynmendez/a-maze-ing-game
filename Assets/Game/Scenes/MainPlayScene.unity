@@ -304,6 +304,7 @@ MonoBehaviour:
   numColumns: 5
   wallLength: 9
   wallDepth: 1
+  wallHeight: 5
   pillarDiameter: 1
   wallPrefab: {fileID: 2471515192180859321, guid: 543608405c75dd64a85b80dd150c2201, type: 3}
 --- !u!1 &410087039

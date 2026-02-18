@@ -9,6 +9,7 @@ public class MazeBuilder : MonoBehaviour
     [SerializeField] int numColumns = 5;
     [SerializeField] float wallLength = 9f;
     [SerializeField] float wallDepth = 1f;
+    [SerializeField] float wallHeight = 5f;
     [SerializeField] float pillarDiameter = 1f;
     [SerializeField] GameObject wallPrefab;
 
@@ -20,13 +21,13 @@ public class MazeBuilder : MonoBehaviour
         PrintMaze();
         Debug.Log("Instantiating maze walls");
 
-        /*// Instantiating top wall of maze
+        // Instantiating top wall of maze
         for (int i = 0; i < numRows; i++)
         {
             Instantiate(wallPrefab,
-                        new Vector3((1 * (wallLength + 1)) + wallDepth,
-                                    0,
-                                    (i * (wallLength + 1)) + (wallLength / 2)),
+                        new Vector3(-(pillarDiameter / 2),
+                                    (wallHeight / 2),
+                                    (i * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
                         Quaternion.identity);
         }
 
@@ -34,11 +35,11 @@ public class MazeBuilder : MonoBehaviour
         for (int i = 0; i < numColumns; i++)
         {
             Instantiate(wallPrefab,
-                        new Vector3((i * (wallLength + 1)) - wallDepth,
-                                    0,
-                                    (1 * (wallLength + 1)) - (wallLength / 2)),
+                        new Vector3((i * (wallLength + pillarDiameter) + (wallLength / 2)),
+                                    (wallHeight / 2),
+                                    (numColumns * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
-        }*/
+        }
 
         // Instantiating full maze
         for (int x = 0; x < numRows; x++)
@@ -51,7 +52,7 @@ public class MazeBuilder : MonoBehaviour
                 {
                     Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
-                                    0,
+                                    (wallHeight / 2),
                                     (z * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
                         Quaternion.identity);
                 }
@@ -60,7 +61,7 @@ public class MazeBuilder : MonoBehaviour
                 {
                     Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
-                                    0,
+                                    (wallHeight / 2),
                                     (z * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
                 }
