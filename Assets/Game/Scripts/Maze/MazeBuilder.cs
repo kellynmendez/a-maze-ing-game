@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class MazeBuilder : MonoBehaviour
@@ -7,9 +8,13 @@ public class MazeBuilder : MonoBehaviour
 
     [SerializeField] int numRows = 5;
     [SerializeField] int numColumns = 5;
-    [SerializeField] float wallLength = 10f;
+    [SerializeField] float wallLength = 9f;
     [SerializeField] float wallDepth = 1f;
+    [SerializeField] float wallHeight = 5f;
+    [SerializeField] float pillarDiameter = 1f;
+    [SerializeField] float pillarHeight = 5f;
     [SerializeField] GameObject wallPrefab;
+    [SerializeField] GameObject pillarPrefab;
 
     private void Start()
     {
@@ -17,15 +22,24 @@ public class MazeBuilder : MonoBehaviour
         cellArray = maze.cellArray;
 
         PrintMaze();
-        Debug.Log("Instantiating maze walls");
 
-        /*// Instantiating top wall of maze
+        // Instantiating top left pillar
+        Instantiate(pillarPrefab,
+                    new Vector3(-(pillarDiameter / 2), (pillarHeight / 2), (pillarDiameter / 2)),
+                    Quaternion.identity);
+
+        // Instantiating top wall of maze
         for (int i = 0; i < numRows; i++)
         {
+            Instantiate(pillarPrefab,
+                        new Vector3(-(pillarDiameter / 2),
+                                    (pillarHeight / 2),
+                                    (((i + 1) * wallLength) + ((i + 1) * pillarDiameter) + (pillarDiameter / 2))),
+                        Quaternion.identity);
             Instantiate(wallPrefab,
-                        new Vector3((1 * (wallLength + 1)) + wallDepth,
-                                    0,
-                                    (i * (wallLength + 1)) + (wallLength / 2)),
+                        new Vector3(-(pillarDiameter / 2),
+                                    (wallHeight / 2),
+                                    (i * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
                         Quaternion.identity);
         }
 
@@ -33,13 +47,18 @@ public class MazeBuilder : MonoBehaviour
         for (int i = 0; i < numColumns; i++)
         {
             Instantiate(wallPrefab,
-                        new Vector3((i * (wallLength + 1)) - wallDepth,
-                                    0,
-                                    (1 * (wallLength + 1)) - (wallLength / 2)),
+                        new Vector3((i * (wallLength + pillarDiameter) + (wallLength / 2)),
+                                    (wallHeight / 2),
+                                    (numColumns * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
-        }*/
+            Instantiate(pillarPrefab,
+                        new Vector3((((i + 1) * wallLength) + (i * pillarDiameter) + (pillarDiameter / 2)),
+                                    (pillarHeight / 2),
+                                    (numColumns * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
+                        Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
+        }
 
-        // Instantiating full maze
+        // Instantiating maze walls
         for (int x = 0; x < numRows; x++)
         {
             for (int z = 0; z < numColumns; z++)
@@ -49,27 +68,75 @@ public class MazeBuilder : MonoBehaviour
                 if (cell.bottomWall == true)
                 {
                     Instantiate(wallPrefab,
-                        new Vector3((x * (wallLength + 1)) + wallDepth,
-                                    0,
-                                    (z * (wallLength + 1)) + (wallLength / 2)),
+                        new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
+                                    (wallHeight / 2),
+                                    (z * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
                         Quaternion.identity);
                 }
 
                 if (cell.leftWall == true)
                 {
                     Instantiate(wallPrefab,
-                        new Vector3((x * (wallLength + 1)) - (wallLength / 2),
-                                    0,
-                                    (z * (wallLength + 1)) - wallDepth),
+                        new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
+                                    (wallHeight / 2),
+                                    (z * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
                 }
             }
         }
+
+        // Instantiating pillars
+
+        void SpawnPillar(int x, int z)
+        {
+            Instantiate(pillarPrefab,
+                        new Vector3(((x * wallLength) + (x * pillarDiameter) + wallLength + (pillarDiameter / 2)),
+                                    (pillarHeight / 2),
+                                    ((z * wallLength) + (z * pillarDiameter) + (pillarDiameter / 2))),
+                        Quaternion.identity);
+        }
+
+        for (int x = 0; x < numRows; x++)
+        {
+            for (int z = 0; z < numColumns; z++)
+            {
+                Cell cell = cellArray[x, z];
+
+                if (z == 0 || x == numRows - 1)
+                    SpawnPillar(x, z);
+                else
+                {
+                    // Grab adjacent cells
+                    Cell leftCell = null;
+                    if (z - 1 >= 0)
+                    {
+                        Debug.Log("adding left cell");
+                        leftCell = cellArray[x, z - 1];
+                    }
+                    Cell bottomCell = null;
+                    if (x + 1 <= numRows - 1)
+                    {
+                        Debug.Log("adding bottom cell");
+                        bottomCell = cellArray[x + 1, z];
+                    }
+
+                    if (cell.bottomWall && cell.leftWall)
+                        SpawnPillar(x, z);
+                    else if (bottomCell != null && (cell.leftWall && bottomCell.leftWall))
+                        SpawnPillar(x, z);
+                    else if (bottomCell != null && (cell.bottomWall && bottomCell.leftWall))
+                        SpawnPillar(x, z);
+                    else if (leftCell != null && (cell.bottomWall && leftCell.bottomWall))
+                        SpawnPillar(x, z);
+                    else if (leftCell != null && (cell.leftWall && leftCell.bottomWall))
+                        SpawnPillar(x, z);
+                    else if (leftCell != null && bottomCell != null)
+                        if (leftCell.bottomWall && bottomCell.leftWall)
+                            SpawnPillar(x, z);
+                }
+            }
+        }
     }
-
-
-
-
 
     public void PrintMaze()
     {
