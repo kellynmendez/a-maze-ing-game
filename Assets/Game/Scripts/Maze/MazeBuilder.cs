@@ -106,7 +106,6 @@ public class MazeBuilder : MonoBehaviour
                     SpawnPillar(x, z);
                 else
                 {
-                    //Debug.Log("x is " + x + " z is " + z);
                     // Grab adjacent cells
                     Cell leftCell = null;
                     if (z - 1 >= 0)
