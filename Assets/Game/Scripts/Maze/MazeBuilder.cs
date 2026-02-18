@@ -1,26 +1,48 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MazeBuilder : MonoBehaviour
 {
+    [System.Serializable]
+    public struct Pair
+    {
+        public int width;
+        public int height;
+
+        public Pair(int width, int height)
+        {
+            this.width = width;
+            this.height = height;
+        }
+    }
+
     private Maze maze;
     private Cell[,] cellArray;
 
+    [Header("Maze Settings")]
     [SerializeField] int numRows = 5;
     [SerializeField] int numColumns = 5;
+    [Header("Rooms")]
+    [SerializeField] List<Pair> roomDimensions;
+    [Header("Dimensions")]
     [SerializeField] float wallLength = 9f;
-    [SerializeField] float wallDepth = 1f;
     [SerializeField] float wallHeight = 5f;
     [SerializeField] float pillarDiameter = 1f;
     [SerializeField] float pillarHeight = 5f;
+    [Header("Prefabs")]
     [SerializeField] GameObject wallPrefab;
     [SerializeField] GameObject pillarPrefab;
 
-    private void Start()
+    private void Awake()
     {
+        roomDimensions = new List<Pair>();
         maze = new Maze(numRows, numColumns);
         cellArray = maze.cellArray;
+    }
 
-        PrintMaze();
+    private void Start()
+    {
+        //PrintMaze();
 
         // Instantiating top left pillar
         GameObject obj = Instantiate(pillarPrefab,

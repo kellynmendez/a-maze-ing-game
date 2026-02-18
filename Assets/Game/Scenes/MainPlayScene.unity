@@ -302,8 +302,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MazeBuilder
   numRows: 10
   numColumns: 10
+  roomDimensions:
+  - width: 2
+    height: 2
+  - width: 2
+    height: 3
+  - width: 3
+    height: 2
+  - width: 3
+    height: 3
   wallLength: 9
-  wallDepth: 1
   wallHeight: 5
   pillarDiameter: 2
   pillarHeight: 5
