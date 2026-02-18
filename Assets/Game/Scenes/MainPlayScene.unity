@@ -305,8 +305,10 @@ MonoBehaviour:
   wallLength: 9
   wallDepth: 1
   wallHeight: 5
-  pillarDiameter: 1
+  pillarDiameter: 2
+  pillarHeight: 5
   wallPrefab: {fileID: 2471515192180859321, guid: 543608405c75dd64a85b80dd150c2201, type: 3}
+  pillarPrefab: {fileID: 2471515192180859321, guid: 9f39a5682b73ec54dbaab285d0297ab3, type: 3}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
