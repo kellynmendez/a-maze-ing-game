@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class MazeBuilder : MonoBehaviour
@@ -70,7 +69,7 @@ public class MazeBuilder : MonoBehaviour
             {
                 Cell cell = cellArray[x, z];
                 
-                if (cell.bottomWall == true)
+                if (cell.bottom.exists == true)
                 {
                     obj = Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
@@ -80,7 +79,7 @@ public class MazeBuilder : MonoBehaviour
                     obj.transform.parent = this.transform;
                 }
 
-                if (cell.leftWall == true)
+                if (cell.left.exists == true)
                 {
                     obj = Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
@@ -118,28 +117,26 @@ public class MazeBuilder : MonoBehaviour
                     Cell leftCell = null;
                     if (z - 1 >= 0)
                     {
-                        Debug.Log("adding left cell");
                         leftCell = cellArray[x, z - 1];
                     }
                     Cell bottomCell = null;
                     if (x + 1 <= numRows - 1)
                     {
-                        Debug.Log("adding bottom cell");
                         bottomCell = cellArray[x + 1, z];
                     }
 
-                    if (cell.bottomWall && cell.leftWall)
+                    if (cell.bottom.exists && cell.left.exists)
                         SpawnPillar(x, z);
-                    else if (bottomCell != null && (cell.leftWall && bottomCell.leftWall))
+                    else if (bottomCell != null && (cell.left.exists && bottomCell.left.exists))
                         SpawnPillar(x, z);
-                    else if (bottomCell != null && (cell.bottomWall && bottomCell.leftWall))
+                    else if (bottomCell != null && (cell.bottom.exists && bottomCell.left.exists))
                         SpawnPillar(x, z);
-                    else if (leftCell != null && (cell.bottomWall && leftCell.bottomWall))
+                    else if (leftCell != null && (cell.bottom.exists && leftCell.bottom.exists))
                         SpawnPillar(x, z);
-                    else if (leftCell != null && (cell.leftWall && leftCell.bottomWall))
+                    else if (leftCell != null && (cell.left.exists && leftCell.bottom.exists))
                         SpawnPillar(x, z);
                     else if (leftCell != null && bottomCell != null)
-                        if (leftCell.bottomWall && bottomCell.leftWall)
+                        if (leftCell.bottom.exists && bottomCell.left.exists)
                             SpawnPillar(x, z);
                 }
             }
@@ -161,11 +158,11 @@ public class MazeBuilder : MonoBehaviour
             for (int c = 0; c < numColumns; c++)
             {
                 Cell cell = cellArray[r, c];
-                if (cell.leftWall == true && cell.bottomWall == true)
+                if (cell.left.exists == true && cell.bottom.exists == true)
                     maze_str += "|_";
-                else if (cell.leftWall == false && cell.bottomWall == true)
+                else if (cell.left.exists == false && cell.bottom.exists == true)
                     maze_str += " _";
-                else if (cell.leftWall == true && cell.bottomWall == false)
+                else if (cell.left.exists == true && cell.bottom.exists == false)
                     maze_str += "| ";
                 else
                     maze_str += "  ";
