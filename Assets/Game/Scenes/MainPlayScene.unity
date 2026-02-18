@@ -302,8 +302,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MazeBuilder
   numRows: 5
   numColumns: 5
-  wallLength: 10
+  wallLength: 9
   wallDepth: 1
+  pillarDiameter: 1
   wallPrefab: {fileID: 2471515192180859321, guid: 543608405c75dd64a85b80dd150c2201, type: 3}
 --- !u!1 &410087039
 GameObject:

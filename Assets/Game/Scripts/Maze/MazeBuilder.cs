@@ -7,8 +7,9 @@ public class MazeBuilder : MonoBehaviour
 
     [SerializeField] int numRows = 5;
     [SerializeField] int numColumns = 5;
-    [SerializeField] float wallLength = 10f;
+    [SerializeField] float wallLength = 9f;
     [SerializeField] float wallDepth = 1f;
+    [SerializeField] float pillarDiameter = 1f;
     [SerializeField] GameObject wallPrefab;
 
     private void Start()
@@ -49,18 +50,18 @@ public class MazeBuilder : MonoBehaviour
                 if (cell.bottomWall == true)
                 {
                     Instantiate(wallPrefab,
-                        new Vector3((x * (wallLength + 1)) + wallDepth,
+                        new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
                                     0,
-                                    (z * (wallLength + 1)) + (wallLength / 2)),
+                                    (z * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
                         Quaternion.identity);
                 }
 
                 if (cell.leftWall == true)
                 {
                     Instantiate(wallPrefab,
-                        new Vector3((x * (wallLength + 1)) - (wallLength / 2),
+                        new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
                                     0,
-                                    (z * (wallLength + 1)) - wallDepth),
+                                    (z * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
                 }
             }
