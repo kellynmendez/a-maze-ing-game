@@ -24,38 +24,43 @@ public class MazeBuilder : MonoBehaviour
         PrintMaze();
 
         // Instantiating top left pillar
-        Instantiate(pillarPrefab,
-                    new Vector3(-(pillarDiameter / 2), (pillarHeight / 2), (pillarDiameter / 2)),
-                    Quaternion.identity);
+        GameObject obj = Instantiate(pillarPrefab,
+                            new Vector3(-(pillarDiameter / 2), (pillarHeight / 2), (pillarDiameter / 2)),
+                            Quaternion.identity);
+        obj.transform.parent = this.transform;
 
         // Instantiating top wall of maze
         for (int i = 0; i < numRows; i++)
         {
-            Instantiate(pillarPrefab,
+            obj = Instantiate(pillarPrefab,
                         new Vector3(-(pillarDiameter / 2),
                                     (pillarHeight / 2),
                                     (((i + 1) * wallLength) + ((i + 1) * pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity);
-            Instantiate(wallPrefab,
+            obj.transform.parent = this.transform;
+            obj = Instantiate(wallPrefab,
                         new Vector3(-(pillarDiameter / 2),
                                     (wallHeight / 2),
                                     (i * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
                         Quaternion.identity);
+            obj.transform.parent = this.transform;
         }
 
         // Instantiating right wall of maze
         for (int i = 0; i < numColumns; i++)
         {
-            Instantiate(wallPrefab,
+            obj = Instantiate(wallPrefab,
                         new Vector3((i * (wallLength + pillarDiameter) + (wallLength / 2)),
                                     (wallHeight / 2),
                                     (numColumns * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
-            Instantiate(pillarPrefab,
+            obj.transform.parent = this.transform;
+            obj = Instantiate(pillarPrefab,
                         new Vector3((((i + 1) * wallLength) + (i * pillarDiameter) + (pillarDiameter / 2)),
                                     (pillarHeight / 2),
                                     (numColumns * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
+            obj.transform.parent = this.transform;
         }
 
         // Instantiating maze walls
@@ -67,20 +72,22 @@ public class MazeBuilder : MonoBehaviour
                 
                 if (cell.bottomWall == true)
                 {
-                    Instantiate(wallPrefab,
+                    obj = Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
                                     (wallHeight / 2),
                                     (z * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
                         Quaternion.identity);
+                    obj.transform.parent = this.transform;
                 }
 
                 if (cell.leftWall == true)
                 {
-                    Instantiate(wallPrefab,
+                    obj = Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
                                     (wallHeight / 2),
                                     (z * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
+                    obj.transform.parent = this.transform;
                 }
             }
         }
@@ -89,11 +96,12 @@ public class MazeBuilder : MonoBehaviour
 
         void SpawnPillar(int x, int z)
         {
-            Instantiate(pillarPrefab,
+            obj = Instantiate(pillarPrefab,
                         new Vector3(((x * wallLength) + (x * pillarDiameter) + wallLength + (pillarDiameter / 2)),
                                     (pillarHeight / 2),
                                     ((z * wallLength) + (z * pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity);
+            obj.transform.parent = this.transform;
         }
 
         for (int x = 0; x < numRows; x++)
