@@ -1,240 +1,267 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Maze
 {
     public Cell[,] cellArray;
-    DisjointSet dsMaze;
-
     public int numRows;
     public int numCols;
     public int numCells;
 
-    public Maze(int numRows, int numCols)
+    private DisjointSet dsMaze;
+    private List<Wall> walls;
+    private List<Room> rooms;
+
+    public Maze(int numRows, int numCols, List<Room> rooms)
     {
-        cellArray = new Cell[numRows, numCols];
         this.numRows = numRows;
         this.numCols = numCols;
+        this.rooms = rooms;
+        cellArray = new Cell[numRows, numCols];
+        walls = new List<Wall>();
         numCells = numRows * numCols;
 
+        InitializeCellsAndWalls();
+        dsMaze = new DisjointSet(numCells);
+
+        // Build the maze including rooms
+        BuildMaze();
+    }
+
+    /**
+     * Initialize cell array with all cells, then add all walls that are not
+     * the full maze's border walls to the walls list
+     */
+    private void InitializeCellsAndWalls()
+    {
         for (int r = 0; r < numRows; r++)
         {
             for (int c = 0; c < numCols; c++)
             {
-                cellArray[r, c] = new Cell();
+                Cell currCell = new Cell(r, c);
+                cellArray[r, c] = currCell;
+
+                if (!(c == 0 && r == numRows - 1))
+                {
+                    if (c == 0)
+                        walls.Add(currCell.bottom);
+                    else if (r == numRows - 1)
+                        walls.Add(currCell.left);
+                    else
+                    {
+                        walls.Add(currCell.left);
+                        walls.Add(currCell.bottom);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks if, given a room's dimensions and a potential cell that would be the
+     * top left cell of the room, whether or not that cell is a valid place to 
+     * make the room.
+     */
+    private bool CheckCellAvailability(int roomZ, int roomX, int cellR, int cellC)
+    {
+        // if the cell's row or columns plus size of room exceeds the maze bounds, it is not valid
+        if (cellR + roomX > numRows || cellC + roomZ > numCols)
+            return false;
+
+        // checking that all cells in the potential room space are available (not taken up by other rooms)
+        for (int r = cellR; r < cellR + roomX; r++)
+        {
+            for (int c = cellC; c < cellC + roomZ; c++)
+            {
+                if (!(cellArray[r, c].available))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Carve the room out the maze!
+     */
+    private void CarveRoom(Room room, Cell topLeft, ref int numUnions)
+    {
+        int startRow = topLeft.row;
+        int startCol = topLeft.col;
+        int endRow = startRow + room.x - 1;
+        int endCol = startCol + room.z - 1;
+
+        for (int r = startRow; r <= endRow; r++)
+        {
+            for (int c = startCol; c <= endCol; c++)
+            {
+                // Get and add the next cell in the room to the room
+                Cell temp = cellArray[r, c];
+                temp.available = false;
+
+                int roomIndex = numCols * startRow + startCol;
+                int cellIndex = numCols * r + c;
+                int roomSet = dsMaze.find(roomIndex);
+                int cellSet = dsMaze.find(cellIndex);
+
+                if (roomSet != cellSet)
+                {
+                    dsMaze.union(roomSet, cellSet);
+                    numUnions++;
+                }
+
+                // Remove internal walls
+                if (r > startRow)
+                    cellArray[r - 1, c].bottom.exists = false;
+                if (c > startCol)
+                    cellArray[r, c].left.exists = false;
             }
         }
 
-        dsMaze = new DisjointSet(numCells);
+        // Get perimeter walls so a door can be made into the room
+        List<Wall> perimeterWalls = GetPerimeterWalls(startRow, startCol, endRow, endCol);
 
-        // Build out walls of the maze
-        BuildMaze();
+        // Randomly pick one wall as a door
+        Wall doorWall = perimeterWalls[Random.Range(0, perimeterWalls.Count)];
+        doorWall.exists = false;
+
+        // Union the room to the maze through the door
+        ConnectDoorToMaze(doorWall, ref numUnions);
+
+        // Remove all other perimeter walls from walls list (so they cannot be
+        //  knocked down when building out the rest of the maze)
+        foreach (Wall w in perimeterWalls)
+        {
+            if (w != doorWall)
+                walls.Remove(w);
+        }
+
+        Debug.Log($"Building room {room.room} at r={startRow}, c={startCol}");
     }
 
-    private void BuildMaze()
+    private List<Wall> GetPerimeterWalls(int startRow, int startCol, int endRow, int endCol)
     {
-        bool mazeBuilt = false;
-        int numUnions = 0;
+        List<Wall> perimeterWalls = new List<Wall>();
 
-        while(!mazeBuilt)
+        // top
+        if (startRow > 0)
+            for (int c = startCol; c <= endCol; c++)
+                perimeterWalls.Add(cellArray[startRow - 1, c].bottom);
+
+        // bottom
+        if (endRow < numRows - 1)
+            for (int c = startCol; c <= endCol; c++)
+                perimeterWalls.Add(cellArray[endRow, c].bottom);
+
+        // left
+        if (startCol > 0)
+            for (int r = startRow; r <= endRow; r++)
+                perimeterWalls.Add(cellArray[r, startCol].left);
+
+        // right
+        if (endCol < numCols - 1)
+            for (int r = startRow; r <= endRow; r++)
+                perimeterWalls.Add(cellArray[r, endCol + 1].left);
+
+        return perimeterWalls;
+    }
+
+    private void ConnectDoorToMaze(Wall doorWall, ref int numUnions)
+    {
+        // Get adjacent cell
+        Cell roomCell = doorWall.parent;
+        Cell adjCell;
+        if (doorWall.side == "L")
         {
-            // grab random cell, num between 0 and n-1
-            int cellNum = Random.Range(0, numCells);
-            int row = cellNum / numRows;
-            int col = cellNum % numCols;
-            int adjRow = -1;
-            int adjCol = -1;
+            adjCell = cellArray[roomCell.row, roomCell.col - 1];
+        }
+        else
+        {
+            adjCell = cellArray[roomCell.row + 1, roomCell.col];
+        }
 
-            /** Randomly pick a wall in the maze and remove it, then union the sets of the two cells */
+        // Union the room to rest of maze
+        int roomIndex = numCols * roomCell.row + roomCell.col;
+        int adjIndex = numCols * adjCell.row + adjCell.col;
+        int roomSet = dsMaze.find(roomIndex);
+        int adjSet = dsMaze.find(adjIndex);
+        if (roomSet != adjSet)
+        {
+            dsMaze.union(roomSet, adjSet);
+            numUnions++;
+        }
+    }
 
-            // cell is a border cell
-            if (row == 0 || col == 0 || row == numRows - 1 || col == numCols - 1)
+    /**
+     * Randomly finds a valid top left cell for a room
+     */
+    private Cell FindRoomPlacement(Room room)
+    {
+        List<Cell> availableCells = new List<Cell>();
+        for (int r = 0; r < numRows; r++)
+            for (int c = 0; c < numCols; c++)
+                availableCells.Add(cellArray[r, c]);
+
+        Cell randCell = null;
+        while (randCell == null)
+        {
+            int randIndex = Random.Range(0, availableCells.Count);
+            Cell checkCell = availableCells[randIndex];
+
+            if (CheckCellAvailability(room.z, room.x, checkCell.row, checkCell.col))
             {
-                /**  CORNER CELL CASES  **/
-                if (row == 0 && col == 0)  // top left corner
-                {
-                    // 50% chance (1 or 2) choice between right and bottom cell
-                    int rand = Random.Range(1, 3);
-                    if (rand == 1) // right cell
-                    {
-                        adjRow = row;
-                        adjCol = col + 1;
-                    }
-                    else // bottom cell
-                    {
-                        adjRow = row + 1;
-                        adjCol = col;
-                    }
-                }
-                else if (row == 0 && col == numCols - 1)  // top right corner
-                {
-                    int rand = Random.Range(1, 3);
-                    if (rand == 1) // bottom cell
-                    {
-                        adjRow = row + 1;
-                        adjCol = col;
-                    }
-                    else // left cell
-                    {
-                        adjRow = row;
-                        adjCol = col - 1;
-                    }
-                }
-                else if (row == numRows - 1 && col == 0)  // bottom left corner
-                {
-                    int rand = Random.Range(1, 3);
-                    if (rand == 1) // top cell
-                    {
-                        adjRow = row - 1;
-                        adjCol = col;
-                    }
-                    else // right cell
-                    {
-                        adjRow = row;
-                        adjCol = col + 1;
-                    }
-                }
-                else if (row == numRows - 1 && col == numCols - 1)  // bottom right corner
-                {
-                    int rand = Random.Range(1, 3);
-                    if (rand == 1) // left cell
-                    {
-                        adjRow = row;
-                        adjCol = col - 1;
-                    }
-                    else // top cell
-                    {
-                        adjRow = row - 1;
-                        adjCol = col;
-                    }
-                }
-
-                /**  BORDER CELL CASES  **/
-                else if (col == 0)  // left side
-                {
-                    // 33% chance (1 or 2 or 3) choice between top, right, and bottom cell
-                    int rand = Random.Range(1, 4);
-                    if (rand == 1) // top cell
-                    {
-                        adjRow = row - 1;
-                        adjCol = col;
-                    }
-                    else if (rand == 2) // right cell
-                    {
-                        adjRow = row;
-                        adjCol = col + 1;
-                    }
-                    else // bottom cell
-                    {
-                        adjRow = row + 1;
-                        adjCol = col;
-                    }
-                }
-                else if (col == numCols - 1)  // right side
-                {
-                    int rand = Random.Range(1, 4);
-                    if (rand == 1) // bottom cell
-                    {
-                        adjRow = row + 1;
-                        adjCol = col;
-                    }
-                    else if (rand == 2) // left cell
-                    {
-                        adjRow = row;
-                        adjCol = col - 1;
-                    }
-                    else // top cell
-                    {
-                        adjRow = row - 1;
-                        adjCol = col;
-                    }
-                }
-                else if (row == 0)  // top
-                {
-                    int rand = Random.Range(1, 4);
-                    if (rand == 1) // right cell
-                    {
-                        adjRow = row;
-                        adjCol = col + 1;
-                    }
-                    else if (rand == 2) // bottom cell
-                    {
-                        adjRow = row + 1;
-                        adjCol = col;
-                    }
-                    else // left cell
-                    {
-                        adjRow = row;
-                        adjCol = col - 1;
-                    }
-                }
-                else if (row == numRows - 1)  // bottom
-                {
-                    int rand = Random.Range(1, 4);
-                    if (rand == 1) // left cell
-                    {
-                        adjRow = row;
-                        adjCol = col - 1;
-                    }
-                    else if (rand == 2) // top cell
-                    {
-                        adjRow = row - 1;
-                        adjCol = col;
-                    }
-                    else // right cell
-                    {
-                        adjRow = row;
-                        adjCol = col + 1;
-                    }
-                }
+                randCell = checkCell;
+                break;
             }
-            // Cell is an inner cell
             else
             {
-                // 25% chance (1, 2, 3, or 4) choice between top, bottom, left, and right cells
-                int rand = Random.Range(1, 5);
-                if (rand == 1) // top cell
-                {
-                    adjRow = row - 1;
-                    adjCol = col;
-                }
-                else if (rand == 2) // right cell
-                {
-                    adjRow = row;
-                    adjCol = col + 1;
-                }
-                else if (rand == 3) // bottom cell
-                {
-                    adjRow = row + 1;
-                    adjCol = col;
-                }
-                else // left cell
-                {
-                    adjRow = row;
-                    adjCol = col - 1;
-                }
+                availableCells.RemoveAt(randIndex);
             }
+        }
 
-            if (adjRow == -1 || adjCol == -1)
+        return randCell;
+    }
+
+    /**
+     * Build the rest of the maze using the disjoint set maze gen algorithm
+     */
+    private void BuildRemainingMaze(ref int numUnions)
+    {
+        bool mazeBuilt = false;
+
+        while (!mazeBuilt && walls.Count > 0)
+        {
+            int rand = Random.Range(0, walls.Count);
+            Wall randWall = walls[rand];
+
+            Cell thisCell = randWall.parent;
+            Cell adjCell;
+            if (randWall.side == "L")
             {
-                Debug.LogError("row or col of adj cell should not be -1");
+                adjCell = cellArray[thisCell.row, thisCell.col - 1];
+            }
+            else
+            {
+                adjCell = cellArray[thisCell.row + 1, thisCell.col];
             }
 
-            int adjNum = (numCols) * (adjRow) + (adjCol);
+            int cellNum = numCols * thisCell.row + thisCell.col;
+            int adjNum = numCols * adjCell.row + adjCell.col;
             int cellSet = dsMaze.find(cellNum);
             int adjSet = dsMaze.find(adjNum);
 
-            // if cells are not in same set, union and remove wall
             if (cellSet != adjSet)
             {
                 dsMaze.union(cellSet, adjSet);
-                if (row + 1 == adjRow) // adj cell is cell below
-                    cellArray[row, col].bottomWall = false;
-                else if (row - 1 == adjRow) // adj cell is cell above
-                    cellArray[adjRow, adjCol].bottomWall = false;
-                else if (col + 1 == adjCol) // adj cell is cell to right
-                    cellArray[adjRow, adjCol].leftWall = false;
-                else if (col - 1 == adjCol) // adj cell is cell to left
-                    cellArray[row, col].leftWall = false;
+                walls.Remove(randWall);
+
+                if (thisCell.row + 1 == adjCell.row)
+                    cellArray[thisCell.row, thisCell.col].bottom.exists = false;
+                else if (thisCell.row - 1 == adjCell.row)
+                    cellArray[adjCell.row, adjCell.col].bottom.exists = false;
+                else if (thisCell.col + 1 == adjCell.col)
+                    cellArray[adjCell.row, adjCell.col].left.exists = false;
+                else if (thisCell.col - 1 == adjCell.col)
+                    cellArray[thisCell.row, thisCell.col].left.exists = false;
 
                 numUnions++;
                 if (numUnions == numCells - 1)
@@ -242,4 +269,20 @@ public class Maze
             }
         }
     }
+
+    private void BuildMaze()
+    {
+        int numUnions = 0;
+
+        // Build rooms first
+        foreach (Room room in rooms)
+        {
+            Cell topLeft = FindRoomPlacement(room);
+            CarveRoom(room, topLeft, ref numUnions);
+        }
+
+        // Then build out the rest of the maze
+        BuildRemainingMaze(ref numUnions);
+    }
+
 }

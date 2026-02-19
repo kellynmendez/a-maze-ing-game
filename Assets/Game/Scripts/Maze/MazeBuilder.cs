@@ -1,61 +1,89 @@
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 using UnityEngine;
+
+[System.Serializable]
+public struct Room
+{
+    public GameObject room;
+    public int x;
+    public int z;
+
+    public Room(GameObject room, int x, int z)
+    {
+        this.room = room;
+        this.x = x;
+        this.z = z;
+    }
+}
 
 public class MazeBuilder : MonoBehaviour
 {
+
     private Maze maze;
     private Cell[,] cellArray;
 
+    [Header("Maze Settings")]
     [SerializeField] int numRows = 5;
     [SerializeField] int numColumns = 5;
+    [Header("Rooms")]
+    [SerializeField] List<Room> rooms;
+    [Header("Dimensions")]
     [SerializeField] float wallLength = 9f;
-    [SerializeField] float wallDepth = 1f;
     [SerializeField] float wallHeight = 5f;
     [SerializeField] float pillarDiameter = 1f;
     [SerializeField] float pillarHeight = 5f;
+    [Header("Prefabs")]
     [SerializeField] GameObject wallPrefab;
     [SerializeField] GameObject pillarPrefab;
 
+    private void Awake()
+    {
+        maze = new Maze(numRows, numColumns, rooms);
+        cellArray = maze.cellArray;
+    }
+
     private void Start()
     {
-        maze = new Maze(numRows, numColumns);
-        cellArray = maze.cellArray;
-
-        PrintMaze();
+        //PrintMaze();
 
         // Instantiating top left pillar
-        Instantiate(pillarPrefab,
-                    new Vector3(-(pillarDiameter / 2), (pillarHeight / 2), (pillarDiameter / 2)),
-                    Quaternion.identity);
+        GameObject obj = Instantiate(pillarPrefab,
+                            new Vector3(-(pillarDiameter / 2), (pillarHeight / 2), (pillarDiameter / 2)),
+                            Quaternion.identity);
+        obj.transform.parent = this.transform;
 
         // Instantiating top wall of maze
         for (int i = 0; i < numRows; i++)
         {
-            Instantiate(pillarPrefab,
+            obj = Instantiate(pillarPrefab,
                         new Vector3(-(pillarDiameter / 2),
                                     (pillarHeight / 2),
                                     (((i + 1) * wallLength) + ((i + 1) * pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity);
-            Instantiate(wallPrefab,
+            obj.transform.parent = this.transform;
+            obj = Instantiate(wallPrefab,
                         new Vector3(-(pillarDiameter / 2),
                                     (wallHeight / 2),
                                     (i * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
                         Quaternion.identity);
+            obj.transform.parent = this.transform;
         }
 
         // Instantiating right wall of maze
         for (int i = 0; i < numColumns; i++)
         {
-            Instantiate(wallPrefab,
+            obj = Instantiate(wallPrefab,
                         new Vector3((i * (wallLength + pillarDiameter) + (wallLength / 2)),
                                     (wallHeight / 2),
                                     (numColumns * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
-            Instantiate(pillarPrefab,
+            obj.transform.parent = this.transform;
+            obj = Instantiate(pillarPrefab,
                         new Vector3((((i + 1) * wallLength) + (i * pillarDiameter) + (pillarDiameter / 2)),
                                     (pillarHeight / 2),
                                     (numColumns * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
+            obj.transform.parent = this.transform;
         }
 
         // Instantiating maze walls
@@ -65,35 +93,37 @@ public class MazeBuilder : MonoBehaviour
             {
                 Cell cell = cellArray[x, z];
                 
-                if (cell.bottomWall == true)
+                if (cell.bottom.exists == true)
                 {
-                    Instantiate(wallPrefab,
+                    obj = Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
                                     (wallHeight / 2),
                                     (z * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
                         Quaternion.identity);
+                    obj.transform.parent = this.transform;
                 }
 
-                if (cell.leftWall == true)
+                if (cell.left.exists == true)
                 {
-                    Instantiate(wallPrefab,
+                    obj = Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
                                     (wallHeight / 2),
                                     (z * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
+                    obj.transform.parent = this.transform;
                 }
             }
         }
 
         // Instantiating pillars
-
         void SpawnPillar(int x, int z)
         {
-            Instantiate(pillarPrefab,
+            obj = Instantiate(pillarPrefab,
                         new Vector3(((x * wallLength) + (x * pillarDiameter) + wallLength + (pillarDiameter / 2)),
                                     (pillarHeight / 2),
                                     ((z * wallLength) + (z * pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity);
+            obj.transform.parent = this.transform;
         }
 
         for (int x = 0; x < numRows; x++)
@@ -110,28 +140,26 @@ public class MazeBuilder : MonoBehaviour
                     Cell leftCell = null;
                     if (z - 1 >= 0)
                     {
-                        Debug.Log("adding left cell");
                         leftCell = cellArray[x, z - 1];
                     }
                     Cell bottomCell = null;
                     if (x + 1 <= numRows - 1)
                     {
-                        Debug.Log("adding bottom cell");
                         bottomCell = cellArray[x + 1, z];
                     }
 
-                    if (cell.bottomWall && cell.leftWall)
+                    if (cell.bottom.exists && cell.left.exists)
                         SpawnPillar(x, z);
-                    else if (bottomCell != null && (cell.leftWall && bottomCell.leftWall))
+                    else if (bottomCell != null && (cell.left.exists && bottomCell.left.exists))
                         SpawnPillar(x, z);
-                    else if (bottomCell != null && (cell.bottomWall && bottomCell.leftWall))
+                    else if (bottomCell != null && (cell.bottom.exists && bottomCell.left.exists))
                         SpawnPillar(x, z);
-                    else if (leftCell != null && (cell.bottomWall && leftCell.bottomWall))
+                    else if (leftCell != null && (cell.bottom.exists && leftCell.bottom.exists))
                         SpawnPillar(x, z);
-                    else if (leftCell != null && (cell.leftWall && leftCell.bottomWall))
+                    else if (leftCell != null && (cell.left.exists && leftCell.bottom.exists))
                         SpawnPillar(x, z);
                     else if (leftCell != null && bottomCell != null)
-                        if (leftCell.bottomWall && bottomCell.leftWall)
+                        if (leftCell.bottom.exists && bottomCell.left.exists)
                             SpawnPillar(x, z);
                 }
             }
@@ -153,11 +181,11 @@ public class MazeBuilder : MonoBehaviour
             for (int c = 0; c < numColumns; c++)
             {
                 Cell cell = cellArray[r, c];
-                if (cell.leftWall == true && cell.bottomWall == true)
+                if (cell.left.exists == true && cell.bottom.exists == true)
                     maze_str += "|_";
-                else if (cell.leftWall == false && cell.bottomWall == true)
+                else if (cell.left.exists == false && cell.bottom.exists == true)
                     maze_str += " _";
-                else if (cell.leftWall == true && cell.bottomWall == false)
+                else if (cell.left.exists == true && cell.bottom.exists == false)
                     maze_str += "| ";
                 else
                     maze_str += "  ";

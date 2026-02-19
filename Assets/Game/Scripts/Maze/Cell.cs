@@ -1,14 +1,19 @@
-using UnityEngine;
 
 public class Cell
 {
-    public bool leftWall;
-    public bool bottomWall;
+    public int row;
+    public int col;
+    public bool available;
+    public Wall left;
+    public Wall bottom;
 
-    public Cell()
+    public Cell(int row, int col)
     {
-        leftWall = true;
-        bottomWall = true;
+        this.row = row;
+        this.col = col;
+        left = new Wall(this, "L");
+        bottom = new Wall(this, "B");
+        available = true;
     }
 
 }
