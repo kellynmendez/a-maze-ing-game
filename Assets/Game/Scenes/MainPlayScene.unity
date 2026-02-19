@@ -302,16 +302,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MazeBuilder
   numRows: 10
   numColumns: 10
-  roomDimensions:
-  - width: 2
-    height: 2
-  - width: 2
-    height: 3
-  - width: 3
-    height: 2
-  - width: 3
-    height: 3
-  wallLength: 9
+  rooms:
+  - room: {fileID: 2471515192180859321, guid: 34d60a403250c5b4f980d09b6cc1cef0, type: 3}
+    x: 2
+    z: 2
+  - room: {fileID: 2471515192180859321, guid: bf2dd6df34d9b7e4fac22c9c0cb6ff5b, type: 3}
+    x: 3
+    z: 3
+  - room: {fileID: 2471515192180859321, guid: 8bccf564b231033488df6da87cc905d2, type: 3}
+    x: 2
+    z: 3
+  wallLength: 10
   wallHeight: 5
   pillarDiameter: 2
   pillarHeight: 5

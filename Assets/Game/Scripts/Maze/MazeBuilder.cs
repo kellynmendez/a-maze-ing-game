@@ -1,20 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public struct Room
+{
+    public GameObject room;
+    public int x;
+    public int z;
+
+    public Room(GameObject room, int x, int z)
+    {
+        this.room = room;
+        this.x = x;
+        this.z = z;
+    }
+}
+
 public class MazeBuilder : MonoBehaviour
 {
-    [System.Serializable]
-    public struct Dimension
-    {
-        public int width;
-        public int height;
-
-        public Dimension(int width, int height)
-        {
-            this.width = width;
-            this.height = height;
-        }
-    }
 
     private Maze maze;
     private Cell[,] cellArray;
@@ -23,7 +26,7 @@ public class MazeBuilder : MonoBehaviour
     [SerializeField] int numRows = 5;
     [SerializeField] int numColumns = 5;
     [Header("Rooms")]
-    [SerializeField] List<Dimension> roomDimensions;
+    [SerializeField] List<Room> rooms;
     [Header("Dimensions")]
     [SerializeField] float wallLength = 9f;
     [SerializeField] float wallHeight = 5f;
@@ -35,8 +38,7 @@ public class MazeBuilder : MonoBehaviour
 
     private void Awake()
     {
-        roomDimensions = new List<Dimension>();
-        maze = new Maze(numRows, numColumns);
+        maze = new Maze(numRows, numColumns, rooms);
         cellArray = maze.cellArray;
     }
 
@@ -114,7 +116,6 @@ public class MazeBuilder : MonoBehaviour
         }
 
         // Instantiating pillars
-
         void SpawnPillar(int x, int z)
         {
             obj = Instantiate(pillarPrefab,

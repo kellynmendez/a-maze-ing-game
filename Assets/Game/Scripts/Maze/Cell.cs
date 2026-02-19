@@ -3,6 +3,7 @@ public class Cell
 {
     public int row;
     public int col;
+    public bool available;
     public Wall left;
     public Wall bottom;
 
@@ -12,6 +13,7 @@ public class Cell
         this.col = col;
         left = new Wall(this, "L");
         bottom = new Wall(this, "B");
+        available = true;
     }
 
 }
