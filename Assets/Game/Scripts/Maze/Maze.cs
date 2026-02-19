@@ -120,19 +120,35 @@ public class Maze
         // Get perimeter walls so a door can be made into the room
         List<Wall> perimeterWalls = GetPerimeterWalls(startRow, startCol, endRow, endCol);
 
-        // Randomly pick one wall as a door
-        Wall doorWall = perimeterWalls[Random.Range(0, perimeterWalls.Count)];
-        doorWall.exists = false;
-
-        // Union the room to the maze through the door
-        ConnectDoorToMaze(doorWall, ref numUnions);
-
-        // Remove all other perimeter walls from walls list (so they cannot be
-        //  knocked down when building out the rest of the maze)
+        // Do not want the door to be a wall that two rooms share
+        List<Wall> validDoors = new List<Wall>();
         foreach (Wall w in perimeterWalls)
         {
-            if (w != doorWall)
-                walls.Remove(w);
+            Cell adjCell;
+            if (w.side == "L")
+                adjCell = cellArray[w.parent.row, w.parent.col - 1];
+            else
+                adjCell = cellArray[w.parent.row + 1, w.parent.col];
+
+            if (adjCell.available)
+                validDoors.Add(w);
+        }
+
+        if (validDoors.Count > 0)
+        {
+            Wall doorWall = validDoors[Random.Range(0, validDoors.Count)];
+            doorWall.exists = false;
+
+            // Union the room to the rest of the maze
+            ConnectDoorToMaze(doorWall, ref numUnions);
+
+            // Do not want the perimeter walls to be options to knock 
+            //  down when building out the rest of the maze
+            foreach (Wall w in perimeterWalls)
+            {
+                if (w != doorWall)
+                    walls.Remove(w);
+            }
         }
 
         Debug.Log($"Building room {room.room} at r={startRow}, c={startCol}");
