@@ -290,9 +290,21 @@ public class Maze
     {
         int numUnions = 0;
 
-        // Build rooms first
-        foreach (Room room in rooms)
+        // The first room needs to be at the center of the maze (player start location)
+        if (rooms.Count > 0)
         {
+            Room firstRoom = rooms[0];
+            int centerRow = numRows / 2 - firstRoom.x / 2;
+            int centerCol = numCols / 2 - firstRoom.z / 2;
+
+            Cell topLeft = cellArray[centerRow, centerCol];
+            CarveRoom(firstRoom, topLeft, ref numUnions);
+        }
+
+        // Build rooms first
+        for (int i = 1; i < rooms.Count; i++)
+        {
+            Room room = rooms[i];
             Cell topLeft = FindRoomPlacement(room);
             CarveRoom(room, topLeft, ref numUnions);
         }
