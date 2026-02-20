@@ -300,14 +300,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52490891b8dd1694cbcfe03c02d518b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MazeBuilder
-  numRows: 12
-  numColumns: 12
+  numRows: 10
+  numColumns: 10
   rooms:
   - room: {fileID: 2471515192180859321, guid: 34d60a403250c5b4f980d09b6cc1cef0, type: 3}
     x: 2
     z: 2
-  - room: {fileID: 2471515192180859321, guid: bf2dd6df34d9b7e4fac22c9c0cb6ff5b, type: 3}
-    x: 3
+  - room: {fileID: 2471515192180859321, guid: 8bccf564b231033488df6da87cc905d2, type: 3}
+    x: 2
     z: 3
   - room: {fileID: 2471515192180859321, guid: 8bccf564b231033488df6da87cc905d2, type: 3}
     x: 2
