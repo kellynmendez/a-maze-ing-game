@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: e0d78e006a4ebf04d9828b1db07fef10
+guid: 1ec95c681ef631a4aa5f11fdc80bb468
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: T_room_fairy
+    second: {fileID: 2100000, guid: f00a329eb574e9942a450ba9855d7ec6, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
