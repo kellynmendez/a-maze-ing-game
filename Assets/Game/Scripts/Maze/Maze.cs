@@ -295,10 +295,11 @@ public class Maze
             int cellSet = dsMaze.find(cellNum);
             int adjSet = dsMaze.find(adjNum);
 
+            walls.Remove(randWall);
+
             if (cellSet != adjSet)
             {
                 dsMaze.union(cellSet, adjSet);
-                walls.Remove(randWall);
 
                 if (thisCell.row + 1 == adjCell.row)
                     cellArray[thisCell.row, thisCell.col].bottom.exists = false;
