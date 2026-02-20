@@ -31,7 +31,6 @@ public class MazeBuilder : MonoBehaviour
     [SerializeField] float wallLength = 9f;
     [SerializeField] float wallHeight = 5f;
     [SerializeField] float pillarDiameter = 1f;
-    [SerializeField] float pillarHeight = 5f;
     [Header("Prefabs")]
     [SerializeField] GameObject wallPrefab;
     [SerializeField] GameObject pillarPrefab;
@@ -48,7 +47,7 @@ public class MazeBuilder : MonoBehaviour
 
         // Instantiating top left pillar
         GameObject obj = Instantiate(pillarPrefab,
-                            new Vector3(-(pillarDiameter / 2), (pillarHeight / 2), (pillarDiameter / 2)),
+                            new Vector3(-(pillarDiameter / 2), 0, (pillarDiameter / 2)),
                             Quaternion.identity);
         obj.transform.parent = this.transform;
 
@@ -57,7 +56,7 @@ public class MazeBuilder : MonoBehaviour
         {
             obj = Instantiate(pillarPrefab,
                         new Vector3(-(pillarDiameter / 2),
-                                    (pillarHeight / 2),
+                                    0,
                                     (((i + 1) * wallLength) + ((i + 1) * pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity);
             obj.transform.parent = this.transform;
@@ -80,7 +79,7 @@ public class MazeBuilder : MonoBehaviour
             obj.transform.parent = this.transform;
             obj = Instantiate(pillarPrefab,
                         new Vector3((((i + 1) * wallLength) + (i * pillarDiameter) + (pillarDiameter / 2)),
-                                    (pillarHeight / 2),
+                                    0,
                                     (numColumns * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
             obj.transform.parent = this.transform;
@@ -120,7 +119,7 @@ public class MazeBuilder : MonoBehaviour
         {
             obj = Instantiate(pillarPrefab,
                         new Vector3(((x * wallLength) + (x * pillarDiameter) + wallLength + (pillarDiameter / 2)),
-                                    (pillarHeight / 2),
+                                    0,
                                     ((z * wallLength) + (z * pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity);
             obj.transform.parent = this.transform;

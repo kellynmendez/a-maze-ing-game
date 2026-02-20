@@ -10,6 +10,8 @@ public class Maze
 
     private DisjointSet dsMaze;
     private List<Wall> walls;
+    private List<Wall> doors;
+    private List<Cell> availableCells;
     private List<Room> rooms;
 
     public Maze(int numRows, int numCols, List<Room> rooms)
@@ -17,23 +19,32 @@ public class Maze
         this.numRows = numRows;
         this.numCols = numCols;
         this.rooms = rooms;
-        cellArray = new Cell[numRows, numCols];
-        walls = new List<Wall>();
-        numCells = numRows * numCols;
 
-        InitializeCellsAndWalls();
-        dsMaze = new DisjointSet(numCells);
+        bool success = false;
+        int attempts = 0;
+        int maxAttempts = 30;
+        while (!success && attempts < maxAttempts)
+        {
+            attempts++;
 
-        // Build the maze including rooms
-        BuildMaze();
+            InitializeGridAndVars();
+            success = BuildMaze();
+        }
+
+        if (!success)
+        {
+            Debug.LogError("Maze generation failed after max attempts!");
+        }
     }
 
-    /**
-     * Initialize cell array with all cells, then add all walls that are not
-     * the full maze's border walls to the walls list
-     */
-    private void InitializeCellsAndWalls()
+    private void InitializeGridAndVars()
     {
+        cellArray = new Cell[numRows, numCols];
+        walls = new List<Wall>();
+        doors = new List<Wall>();
+        numCells = numRows * numCols;
+
+        // Initialize cell array w base cells
         for (int r = 0; r < numRows; r++)
         {
             for (int c = 0; c < numCols; c++)
@@ -55,29 +66,14 @@ public class Maze
                 }
             }
         }
-    }
 
-    /**
-     * Checks if, given a room's dimensions and a potential cell that would be the
-     * top left cell of the room, whether or not that cell is a valid place to 
-     * make the room.
-     */
-    private bool CheckCellAvailability(int roomZ, int roomX, int cellR, int cellC)
-    {
-        // if the cell's row or columns plus size of room exceeds the maze bounds, it is not valid
-        if (cellR + roomX > numRows || cellC + roomZ > numCols)
-            return false;
+        // List of cells that are available for carving out rooms
+        availableCells = new List<Cell>();
+        for (int r = 0; r < numRows; r++)
+            for (int c = 0; c < numCols; c++)
+                availableCells.Add(cellArray[r, c]);
 
-        // checking that all cells in the potential room space are available (not taken up by other rooms)
-        for (int r = cellR; r < cellR + roomX; r++)
-        {
-            for (int c = cellC; c < cellC + roomZ; c++)
-            {
-                if (!(cellArray[r, c].available))
-                    return false;
-            }
-        }
-        return true;
+        dsMaze = new DisjointSet(numCells);
     }
 
     /**
@@ -141,6 +137,7 @@ public class Maze
 
             // Union the room to the rest of the maze
             ConnectDoorToMaze(doorWall, ref numUnions);
+            doors.Add(doorWall);
 
             // Do not want the perimeter walls to be options to knock 
             //  down when building out the rest of the maze
@@ -151,7 +148,7 @@ public class Maze
             }
         }
 
-        Debug.Log($"Building room {room.room} at r={startRow}, c={startCol}");
+        //Debug.Log($"Building room {room.room} at r={startRow}, c={startCol}");
     }
 
     private List<Wall> GetPerimeterWalls(int startRow, int startCol, int endRow, int endCol)
@@ -208,25 +205,57 @@ public class Maze
     }
 
     /**
+     * Checks if, given a room's dimensions and a potential cell that would be the
+     * top left cell of the room, whether or not that cell is a valid place to 
+     * make the room.
+     */
+    private bool CheckCellAvailability(int roomZ, int roomX, int cellR, int cellC)
+    {
+        // if the cell's row or columns plus size of room exceeds the maze bounds, it is not valid
+        if (cellR + roomX > numRows || cellC + roomZ > numCols)
+            return false;
+
+        // checking that all cells in the potential room space are available (not taken up by other rooms)
+        for (int r = cellR; r < cellR + roomX; r++)
+        {
+            for (int c = cellC; c < cellC + roomZ; c++)
+            {
+                if (!(cellArray[r, c].available))
+                    return false;
+
+                // the new room cannot touch an existing door
+                foreach (Wall door in doors)
+                {
+                    Cell doorCell = door.parent;
+                    Cell outsideCell;
+
+                    if (door.side == "L")
+                        outsideCell = cellArray[doorCell.row, doorCell.col - 1];
+                    else
+                        outsideCell = cellArray[doorCell.row + 1, doorCell.col];
+
+                    if (cellArray[r, c] == outsideCell)
+                        return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Randomly finds a valid top left cell for a room
      */
     private Cell FindRoomPlacement(Room room)
     {
-        List<Cell> availableCells = new List<Cell>();
-        for (int r = 0; r < numRows; r++)
-            for (int c = 0; c < numCols; c++)
-                availableCells.Add(cellArray[r, c]);
-
-        Cell randCell = null;
-        while (randCell == null)
+        while (availableCells.Count > 0)
         {
             int randIndex = Random.Range(0, availableCells.Count);
             Cell checkCell = availableCells[randIndex];
 
             if (CheckCellAvailability(room.z, room.x, checkCell.row, checkCell.col))
             {
-                randCell = checkCell;
-                break;
+                return checkCell;
             }
             else
             {
@@ -234,7 +263,8 @@ public class Maze
             }
         }
 
-        return randCell;
+        Debug.LogWarning("No valid placement found for room.");
+        return null;
     }
 
     /**
@@ -286,7 +316,7 @@ public class Maze
         }
     }
 
-    private void BuildMaze()
+    private bool BuildMaze()
     {
         int numUnions = 0;
 
@@ -301,16 +331,24 @@ public class Maze
             CarveRoom(firstRoom, topLeft, ref numUnions);
         }
 
-        // Build rooms first
+        // Build rest of rooms
         for (int i = 1; i < rooms.Count; i++)
         {
             Room room = rooms[i];
             Cell topLeft = FindRoomPlacement(room);
+
+            if (topLeft == null)
+            {
+                return false;
+            }
+
             CarveRoom(room, topLeft, ref numUnions);
         }
 
         // Then build out the rest of the maze
         BuildRemainingMaze(ref numUnions);
+
+        return true;
     }
 
 }
