@@ -44,12 +44,13 @@ public class MazeBuilder : MonoBehaviour
     {
         //PrintMaze();
 
-        // Instantiating top left pillar
-        GameObject obj = Instantiate(pillarPrefab,
-                            new Vector3(-(pillarDiameter / 2), 0, (pillarDiameter / 2)),
-                            Quaternion.identity);
-        obj.transform.parent = this.transform;
+        InstantiateWallsAndPillars();
 
+    }
+
+    private void InstantiateWallsAndPillars()
+    {
+        GameObject obj;
         // Instantiating top wall of maze
         for (int i = 0; i < numRows; i++)
         {
@@ -63,7 +64,7 @@ public class MazeBuilder : MonoBehaviour
                         new Vector3(-(pillarDiameter / 2),
                                     0,
                                     (i * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
-                        Quaternion.identity);
+                        Quaternion.Euler(0, Random.Range(0, 2) * 180f, 0));
             obj.transform.parent = this.transform;
         }
 
@@ -74,13 +75,13 @@ public class MazeBuilder : MonoBehaviour
                         new Vector3((i * (wallLength + pillarDiameter) + (wallLength / 2)),
                                     0,
                                     (numColumns * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
-                        Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
+                        Quaternion.Euler(0, Random.Range(0, 2) * 180f + 90f, 0));
             obj.transform.parent = this.transform;
             obj = Instantiate(pillarPrefab,
                         new Vector3((((i + 1) * wallLength) + (i * pillarDiameter) + (pillarDiameter / 2)),
                                     0,
                                     (numColumns * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
-                        Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
+                        Quaternion.identity);
             obj.transform.parent = this.transform;
         }
 
@@ -97,7 +98,7 @@ public class MazeBuilder : MonoBehaviour
                         new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
                                     0,
                                     (z * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
-                        Quaternion.identity);
+                        Quaternion.Euler(0, Random.Range(0, 2) * 180f, 0));
                     obj.transform.parent = this.transform;
                 }
 
@@ -107,11 +108,17 @@ public class MazeBuilder : MonoBehaviour
                         new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
                                     0,
                                     (z * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
-                        Quaternion.identity * Quaternion.AngleAxis(90, Vector3.up));
+                        Quaternion.Euler(0, Random.Range(0, 2) * 180f + 90f, 0));
                     obj.transform.parent = this.transform;
                 }
             }
         }
+
+        // Instantiating top left pillar
+        obj = Instantiate(pillarPrefab,
+                            new Vector3(-(pillarDiameter / 2), 0, (pillarDiameter / 2)),
+                            Quaternion.identity);
+        obj.transform.parent = this.transform;
 
         // Instantiating pillars
         void SpawnPillar(int x, int z)
