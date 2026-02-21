@@ -52,6 +52,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        
+    }
+
+    void FixedUpdate()
+    {
         if (!dead)
         {
             moveHorizontal = Input.GetAxisRaw("Horizontal");
@@ -73,13 +78,7 @@ public class PlayerController : MonoBehaviour
             {
                 groundCheckTimer -= Time.deltaTime;
             }
-        }
-    }
 
-    void FixedUpdate()
-    {
-        if (!dead)
-        {
             MovePlayer();
         }
     }
@@ -101,15 +100,16 @@ public class PlayerController : MonoBehaviour
         Vector3 movement = (transform.right * moveHorizontal + transform.forward * moveForward).normalized;
         Vector3 targetVelocity = movement * MoveSpeed;
 
-        Vector3 velocity = rb.linearVelocity;
-        velocity.x = targetVelocity.x;
-        velocity.z = targetVelocity.z;
-        rb.linearVelocity = velocity;
+        rb.linearVelocity = new Vector3(
+            targetVelocity.x,
+            rb.linearVelocity.y,
+            targetVelocity.z
+        );
 
-        if (isGrounded && moveHorizontal == 0 && moveForward == 0)
+        /*if (isGrounded && moveHorizontal == 0 && moveForward == 0)
         {
             rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
-        }
+        }*/
 
         // jump gravity multipliers
         if (rb.linearVelocity.y < 0)
