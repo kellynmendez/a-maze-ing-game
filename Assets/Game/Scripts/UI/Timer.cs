@@ -10,7 +10,6 @@ public class Timer : MonoBehaviour
     [SerializeField] PlayerController player;
     [SerializeField] float timeValue = 30f;
     [SerializeField] TMP_Text timerText;
-    [SerializeField] string loseText = "You ran out of time!";
     //UIController _uiController = null;
     private bool playerDead = false;
 
