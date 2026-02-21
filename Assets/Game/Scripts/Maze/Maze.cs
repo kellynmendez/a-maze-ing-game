@@ -329,6 +329,7 @@ public class Maze
             int centerCol = numCols / 2 - firstRoom.z / 2;
 
             Cell topLeft = cellArray[centerRow, centerCol];
+            topLeft.room = firstRoom;
             CarveRoom(firstRoom, topLeft, ref numUnions);
         }
 
@@ -343,6 +344,7 @@ public class Maze
                 return false;
             }
 
+            topLeft.room = room;
             CarveRoom(room, topLeft, ref numUnions);
         }
 

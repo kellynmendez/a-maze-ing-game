@@ -47,10 +47,10 @@ MonoBehaviour:
   numRows: 10
   numColumns: 10
   rooms:
-  - room: {fileID: 2471515192180859321, guid: 34d60a403250c5b4f980d09b6cc1cef0, type: 3}
+  - room: {fileID: 2471515192180859321, guid: 73ee94998b1d92648844cdfa023f3474, type: 3}
     x: 2
     z: 2
-  - room: {fileID: 2471515192180859321, guid: 34d60a403250c5b4f980d09b6cc1cef0, type: 3}
+  - room: {fileID: 2471515192180859321, guid: 73ee94998b1d92648844cdfa023f3474, type: 3}
     x: 2
     z: 2
   - room: {fileID: 2471515192180859321, guid: 8bccf564b231033488df6da87cc905d2, type: 3}
