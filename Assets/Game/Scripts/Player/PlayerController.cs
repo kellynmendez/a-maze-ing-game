@@ -1,8 +1,9 @@
 using UnityEngine;
 
-[RequireComponent (typeof(Rigidbody))]
-public class PlayerMovement : MonoBehaviour
+[RequireComponent(typeof(Rigidbody))]
+public class PlayerController : MonoBehaviour
 {
+    [Header("Movement")]
     [SerializeField] float mouseSensitivity = 2f;
     [SerializeField] float MoveSpeed = 5f;
     [SerializeField] float jumpForce = 10f;
@@ -28,8 +29,13 @@ public class PlayerMovement : MonoBehaviour
     private float playerHeight;
     private float raycastDistance;
 
+    // Utility
+    private bool dead;
+
     private void Awake()
     {
+        dead = false;
+
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         cameraTransform = Camera.main.transform;
@@ -46,48 +52,64 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        moveHorizontal = Input.GetAxisRaw("Horizontal");
-        moveForward = Input.GetAxisRaw("Vertical");
-
-        RotateCamera();
-
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            Jump();
-        }
-
-        if (!isGrounded && groundCheckTimer <= 0f)
-        {
-            Vector3 rayOrigin = transform.position + Vector3.up * 0.1f;
-            isGrounded = Physics.Raycast(rayOrigin, Vector3.down, raycastDistance, groundLayer);
-        }
-        else
-        {
-            groundCheckTimer -= Time.deltaTime;
-        }
-
+        
     }
 
     void FixedUpdate()
     {
-        MovePlayer();
+        if (!dead)
+        {
+            moveHorizontal = Input.GetAxisRaw("Horizontal");
+            moveForward = Input.GetAxisRaw("Vertical");
+
+            RotateCamera();
+
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                Jump();
+            }
+
+            if (!isGrounded && groundCheckTimer <= 0f)
+            {
+                Vector3 rayOrigin = transform.position + Vector3.up * 0.1f;
+                isGrounded = Physics.Raycast(rayOrigin, Vector3.down, raycastDistance, groundLayer);
+            }
+            else
+            {
+                groundCheckTimer -= Time.deltaTime;
+            }
+
+            MovePlayer();
+        }
     }
 
+    public bool IsDead()
+    {
+        return dead;
+    }
+
+    public void Kill()
+    {
+        dead = true;
+    }
+
+    #region Movement
     void MovePlayer()
     {
 
         Vector3 movement = (transform.right * moveHorizontal + transform.forward * moveForward).normalized;
         Vector3 targetVelocity = movement * MoveSpeed;
 
-        Vector3 velocity = rb.linearVelocity;
-        velocity.x = targetVelocity.x;
-        velocity.z = targetVelocity.z;
-        rb.linearVelocity = velocity;
+        rb.linearVelocity = new Vector3(
+            targetVelocity.x,
+            rb.linearVelocity.y,
+            targetVelocity.z
+        );
 
-        if (isGrounded && moveHorizontal == 0 && moveForward == 0)
+        /*if (isGrounded && moveHorizontal == 0 && moveForward == 0)
         {
             rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
-        }
+        }*/
 
         // jump gravity multipliers
         if (rb.linearVelocity.y < 0)
@@ -117,4 +139,6 @@ public class PlayerMovement : MonoBehaviour
         groundCheckTimer = groundCheckDelay;
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
     }
+
+    #endregion
 }
