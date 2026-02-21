@@ -50,7 +50,7 @@ MonoBehaviour:
   - room: {fileID: 2471515192180859321, guid: 73ee94998b1d92648844cdfa023f3474, type: 3}
     x: 2
     z: 2
-  - room: {fileID: 2471515192180859321, guid: 73ee94998b1d92648844cdfa023f3474, type: 3}
+  - room: {fileID: 2471515192180859321, guid: f199b673167e1ea4b8fe79b8a5ca8463, type: 3}
     x: 2
     z: 2
   - room: {fileID: 2471515192180859321, guid: 8bccf564b231033488df6da87cc905d2, type: 3}
