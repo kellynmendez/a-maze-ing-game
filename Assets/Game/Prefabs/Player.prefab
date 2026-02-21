@@ -189,7 +189,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   mouseSensitivity: 2
-  MoveSpeed: 5
+  MoveSpeed: 6
   jumpForce: 10
   upMultiplier: 2
   downMultiplier: 2.5
