@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct Room
+public class Room
 {
     public GameObject room;
     public int x;
@@ -45,7 +45,7 @@ public class MazeBuilder : MonoBehaviour
         //PrintMaze();
 
         InstantiateWallsAndPillars();
-
+        BuildRooms();
     }
 
     private void InstantiateWallsAndPillars()
@@ -167,6 +167,23 @@ public class MazeBuilder : MonoBehaviour
                         if (leftCell.bottom.exists && bottomCell.left.exists)
                             SpawnPillar(x, z);
                 }
+            }
+        }
+    }
+
+    private void BuildRooms()
+    {
+        foreach (Cell cell in cellArray)
+        {
+            if (cell.room != null)
+            {
+                GameObject room = Instantiate(cell.room.room,
+                        new Vector3(
+                            ((cell.row * wallLength) + (cell.row * pillarDiameter) - (pillarDiameter / 2) + ((wallLength * cell.room.x) / 2) + ((pillarDiameter * cell.room.x) / 2)),
+                            0,
+                            ((cell.col * wallLength) + (cell.col * pillarDiameter) + (pillarDiameter / 2) + ((wallLength * cell.room.z) / 2) + ((pillarDiameter * cell.room.z) / 2))),
+                        Quaternion.identity);
+                room.transform.parent = this.transform;
             }
         }
     }
