@@ -6,6 +6,7 @@ public class Cell
     public bool available;
     public Wall left;
     public Wall bottom;
+    public Room room;
 
     public Cell(int row, int col)
     {
@@ -14,6 +15,7 @@ public class Cell
         left = new Wall(this, "L");
         bottom = new Wall(this, "B");
         available = true;
+        room = null;
     }
 
 }
