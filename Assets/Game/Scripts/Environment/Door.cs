@@ -12,17 +12,17 @@ public class Door : MonoBehaviour
     [SerializeField] AudioClip collectSFX = null;
     //[SerializeField] ParticleSystem collectParticle = null;
 
-    private bool doorOpened = false;
+    private PlayerController player;
     private AudioSource audioSource = null;
 
     private void Awake()
     {
+        player = FindObjectsByType<PlayerController>(FindObjectsSortMode.None)[0];
         audioSource = GetComponent<AudioSource>();
         openCollider.enabled = false;
     }
     public void OpenDoor()
     {
-        doorOpened = true;
         openCollider.enabled = true;
         PlayOpenFX();
 
@@ -31,6 +31,7 @@ public class Door : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("GAME WON!");
+        player.GameWon();
     }
 
     public void KeyCollected()
