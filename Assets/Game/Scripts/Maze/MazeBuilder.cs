@@ -31,9 +31,9 @@ public class MazeBuilder : MonoBehaviour
     [SerializeField] float wallLength = 9f;
     [SerializeField] float pillarDiameter = 1f;
     [Header("Prefabs")]
-    [SerializeField] GameObject wallPrefab;
-    [SerializeField] GameObject pillarPrefab;
-    [SerializeField] GameObject doorPrefab;
+    [SerializeField] List<GameObject> wallPrefabs;
+    [SerializeField] List<GameObject> pillarPrefabs;
+    [SerializeField] GameObject door;
 
     private void Awake()
     {
@@ -55,12 +55,17 @@ public class MazeBuilder : MonoBehaviour
         // Instantiating top wall of maze
         for (int i = 0; i < numRows; i++)
         {
+            int rand = Random.Range(0, pillarPrefabs.Count);
+            GameObject pillarPrefab = pillarPrefabs[rand];
             obj = Instantiate(pillarPrefab,
                         new Vector3(-(pillarDiameter / 2),
                                     0,
                                     (((i + 1) * wallLength) + ((i + 1) * pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.identity);
             obj.transform.parent = this.transform;
+
+            rand = Random.Range(0, wallPrefabs.Count);
+            GameObject wallPrefab = wallPrefabs[rand];
             obj = Instantiate(wallPrefab,
                         new Vector3(-(pillarDiameter / 2),
                                     0,
@@ -72,12 +77,17 @@ public class MazeBuilder : MonoBehaviour
         // Instantiating right wall of maze
         for (int i = 0; i < numColumns; i++)
         {
+            int rand = Random.Range(0, wallPrefabs.Count);
+            GameObject wallPrefab = wallPrefabs[rand];
             obj = Instantiate(wallPrefab,
                         new Vector3((i * (wallLength + pillarDiameter) + (wallLength / 2)),
                                     0,
                                     (numColumns * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.Euler(0, Random.Range(0, 2) * 180f + 90f, 0));
             obj.transform.parent = this.transform;
+
+            rand = Random.Range(0, pillarPrefabs.Count);
+            GameObject pillarPrefab = pillarPrefabs[rand];
             obj = Instantiate(pillarPrefab,
                         new Vector3((((i + 1) * wallLength) + (i * pillarDiameter) + (pillarDiameter / 2)),
                                     0,
@@ -97,16 +107,16 @@ public class MazeBuilder : MonoBehaviour
                 {
                     if (cell.bottom.isDoor == true)
                     {
-                        Debug.Log("in bottom");
-                        obj = Instantiate(doorPrefab,
-                        new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
+                        door.transform.position = new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
                                     0,
-                                    (z * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
-                        Quaternion.Euler(0, -90, 0));
-                        obj.transform.parent = this.transform;
+                                    (z * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter));
+
+                        door.transform.rotation = Quaternion.Euler(0, -90, 0);
                     }
                     else
                     {
+                        int rand = Random.Range(0, wallPrefabs.Count);
+                        GameObject wallPrefab = wallPrefabs[rand];
                         obj = Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
                                     0,
@@ -120,16 +130,15 @@ public class MazeBuilder : MonoBehaviour
                 {
                     if (cell.left.isDoor == true)
                     {
-                        Debug.Log("in left");
-                        obj = Instantiate(doorPrefab,
-                        new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
+                        door.transform.position = new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
                                     0,
-                                    (z * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
-                        Quaternion.Euler(0, 0, 0));
-                        obj.transform.parent = this.transform;
+                                    (z * (wallLength + pillarDiameter) + (pillarDiameter / 2)));
+                        door.transform.rotation = Quaternion.Euler(0, 0, 0);
                     }
                     else
                     {
+                        int rand = Random.Range(0, wallPrefabs.Count);
+                        GameObject wallPrefab = wallPrefabs[rand];
                         obj = Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
                                     0,
@@ -142,7 +151,9 @@ public class MazeBuilder : MonoBehaviour
         }
 
         // Instantiating top left pillar
-        obj = Instantiate(pillarPrefab,
+        int randPillar = Random.Range(0, pillarPrefabs.Count);
+        GameObject cornerPillar = pillarPrefabs[randPillar];
+        obj = Instantiate(cornerPillar,
                             new Vector3(-(pillarDiameter / 2), 0, (pillarDiameter / 2)),
                             Quaternion.identity);
         obj.transform.parent = this.transform;
@@ -150,6 +161,8 @@ public class MazeBuilder : MonoBehaviour
         // Instantiating pillars
         void SpawnPillar(int x, int z)
         {
+            int rand = Random.Range(0, pillarPrefabs.Count);
+            GameObject pillarPrefab = pillarPrefabs[rand];
             obj = Instantiate(pillarPrefab,
                         new Vector3(((x * wallLength) + (x * pillarDiameter) + wallLength + (pillarDiameter / 2)),
                                     0,

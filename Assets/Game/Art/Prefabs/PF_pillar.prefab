@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1136349356616596844}
   m_Layer: 0
-  m_Name: PF_wallPillar
+  m_Name: PF_pillar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
