@@ -10,6 +10,7 @@ public class Timer : MonoBehaviour
     [SerializeField] PlayerController player;
     [SerializeField] float timeValue = 30f;
     [SerializeField] TMP_Text timerText;
+    [SerializeField] Animation timerAnim;
     //UIController _uiController = null;
     private bool playerDead = false;
 
@@ -30,6 +31,7 @@ public class Timer : MonoBehaviour
             playerDead = player.IsDead();
             if (!playerDead)
             {
+                timerAnim.Play();
                 EndGame();
                 timeValue = 0;
             }
