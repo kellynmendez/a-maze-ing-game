@@ -335,6 +335,8 @@ public class Maze
         return borderCells[rand];
     }
 
+    private bool DoubleCheckMazeIsValid()
+    {
         DisjointSet checkDsMaze = new DisjointSet(numCells);
 
         for (int r = 0; r < numRows; r++)
