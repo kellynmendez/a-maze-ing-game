@@ -31,15 +31,14 @@ public class GameManager : MonoBehaviour
         {
             checkPlayerWon = player.CheckWon();
             uiController.ShowWinText();
-            StartCoroutine(MoveToCredits());
             Time.timeScale = 0;
+            StartCoroutine(MoveToCredits());
         }
     }
 
     public void ExitLevel()
     {
         Time.timeScale = 1;
-        audioMgr.GoingToCredits();
         SceneManager.LoadScene("Credits");
     }
 

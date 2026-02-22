@@ -46,11 +46,6 @@ public class AudioManager : MonoBehaviour
         _audioSource.Play();
     }
 
-    public void GoingToCredits()
-    {
-        PlayGameScore(mainMenuClip);
-    }
-
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Return))
@@ -67,5 +62,10 @@ public class AudioManager : MonoBehaviour
                 PlayGameScore(mainMenuClip);
             }
         }
+    }
+
+    public void PlayCredits()
+    {
+        PlayGameScore(mainMenuClip);
     }
 }
