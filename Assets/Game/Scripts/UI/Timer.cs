@@ -41,7 +41,7 @@ public class Timer : MonoBehaviour
 
     public void AddTime()
     {
-        timeValue += 2f;
+        timeValue += 3f;
         timerAdd.DisplayTimeUpdate();
     }
 

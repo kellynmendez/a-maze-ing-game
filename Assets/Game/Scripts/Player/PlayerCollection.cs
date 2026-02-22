@@ -5,10 +5,12 @@ public class PlayerCollection : MonoBehaviour
     private int keysCollected = 0;
     private Door door;
     private bool doorOpened = false;
+    UIController uiController;
 
     private void Awake()
     {
         door = FindObjectsByType<Door>(FindObjectsSortMode.None)[0];
+        uiController = FindObjectsByType<UIController>(FindObjectsSortMode.None)[0];
     }
 
     void Start()
@@ -35,5 +37,6 @@ public class PlayerCollection : MonoBehaviour
     {
         keysCollected++;
         door.KeyCollected();
+        uiController.AddKey();
     }
 }
