@@ -10,15 +10,12 @@ public class Timer : MonoBehaviour
     [SerializeField] PlayerController player;
     [SerializeField] float timeValue = 30f;
     [SerializeField] TMP_Text timerText;
-    //UIController _uiController = null;
     private bool playerDead = false;
     Color startColor;
 
     private void Awake()
     {
         startColor = timerText.color;
-        // Searching objects in scene for script of type UIController
-        //_uiController = FindObjectOfType<UIController>();
     }
 
     void Update()
@@ -60,7 +57,6 @@ public class Timer : MonoBehaviour
 
     void EndGame()
     {
-        //_uiController.ShowText(loseText);
         player.Kill();
     }
 }

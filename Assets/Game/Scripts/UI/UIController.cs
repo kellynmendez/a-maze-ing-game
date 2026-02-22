@@ -1,40 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
-    /*[SerializeField] Text collectibleTextUI = null;
-    [SerializeField] Text finishedGameTextUI = null;
-    [SerializeField] GameObject timer = null;
-
-    void Start()
+    [SerializeField] GameObject winText;
+    [SerializeField] GameObject loseText;
+    private void Awake()
     {
-        HideText();
+        HideWinText();
+        HideLoseText();
+    }
+    public void ShowWinText()
+    {
+        winText.SetActive(true);
     }
 
-    // Hides win/lose message
-    public void HideText()
+    public void HideWinText()
     {
-        finishedGameTextUI.text = "";
-        finishedGameTextUI.gameObject.SetActive(false);
+        winText.SetActive(false);
     }
 
-    // Shows either win or lose message
-    public void ShowText(string textToShow)
+    public void ShowLoseText()
     {
-        finishedGameTextUI.text = textToShow;
-        finishedGameTextUI.gameObject.SetActive(true);
+        loseText.SetActive(true);
     }
 
-    public void UpdateScoreUI(int collectibleCount)
+    public void HideLoseText()
     {
-        collectibleTextUI.text = collectibleCount.ToString();
+        loseText.SetActive(false);
     }
 
-    public void DeactivateTimer()
-    {
-        timer.SetActive(false);
-    }*/
 }
