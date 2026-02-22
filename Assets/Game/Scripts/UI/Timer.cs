@@ -12,9 +12,11 @@ public class Timer : MonoBehaviour
     [SerializeField] TMP_Text timerText;
     private bool playerDead = false;
     Color startColor;
+    TimerAdd timerAdd;
 
     private void Awake()
     {
+        timerAdd = FindObjectsByType<TimerAdd>(FindObjectsSortMode.None)[0];
         startColor = timerText.color;
     }
 
@@ -35,6 +37,12 @@ public class Timer : MonoBehaviour
         }
 
         DisplayTime(timeValue);
+    }
+
+    public void AddTime()
+    {
+        timeValue += 2f;
+        timerAdd.DisplayTimeUpdate();
     }
 
     void DisplayTime(float timeToDisplay)
