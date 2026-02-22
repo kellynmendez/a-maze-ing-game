@@ -188,7 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17492583e876df8419250665719cbd54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  mouseSensitivity: 2
+  mouseSensitivity: 3
   MoveSpeed: 6
   jumpForce: 10
   upMultiplier: 2
