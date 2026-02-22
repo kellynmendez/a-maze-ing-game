@@ -6,14 +6,15 @@ public class UpDownMove : MonoBehaviour
     [SerializeField] float speed = 3f;
     private Vector3 startPosition;
 
-    void Start()
+    void Awake()
     {
         startPosition = transform.position;
+        Debug.Log(startPosition);
     }
 
     void Update()
     {
         float yMove = startPosition.y + Mathf.Sin( Time.time * speed ) * amplitude;
-        transform.position = new Vector3(startPosition.x, yMove, startPosition.y);
+        transform.position = new Vector3(startPosition.x, yMove, startPosition.z);
     }
 }
