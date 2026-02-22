@@ -2,6 +2,7 @@
 public class Wall
 {
     public bool exists;
+    public bool isDoor;
     public string side;
     public Cell parent;
 
@@ -10,5 +11,6 @@ public class Wall
         this.exists = true;
         this.parent = parent;
         this.side = side;
+        this.isDoor = false;
     }
 }

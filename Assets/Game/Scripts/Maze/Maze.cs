@@ -317,6 +317,24 @@ public class Maze
         }
     }
 
+    private Cell GetRandomBorderCell()
+    {
+        List<Cell> borderCells = new List<Cell>();
+
+        for (int r = 0; r < numRows; r++)
+        {
+            borderCells.Add(cellArray[r, 0]);
+        }
+
+        for (int c = 1; c < numCols; c++)
+        {
+            borderCells.Add(cellArray[numRows - 1, c]);
+        }
+
+        int rand = Random.Range(0, borderCells.Count);
+        return borderCells[rand];
+    }
+
     private bool BuildMaze()
     {
         int numUnions = 0;
@@ -350,6 +368,17 @@ public class Maze
 
         // Then build out the rest of the maze
         BuildRemainingMaze(ref numUnions);
+
+        // Make a door
+        Cell doorCell = GetRandomBorderCell();
+        if (doorCell.col == 0)
+        {
+            doorCell.left.isDoor = true;
+        }
+        else
+        {
+            doorCell.bottom.isDoor = true;
+        }
 
         return true;
     }
