@@ -34,6 +34,7 @@ RectTransform:
   - {fileID: 1067371354508199137}
   - {fileID: 2967517348639907}
   - {fileID: 4048836907229248838}
+  - {fileID: 2627338981923454812}
   m_Father: {fileID: 4915597941415974179}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -998,6 +999,60 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &5741916555789985032
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2627338981923454812}
+  - component: {fileID: 3664778849348536610}
+  m_Layer: 5
+  m_Name: TimeAdd_grp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2627338981923454812
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5741916555789985032}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2342345556707102960}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3664778849348536610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5741916555789985032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa52cf61756aea248a77e3d6ace7ab02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TimerAdd
+  _textPrefab: {fileID: 1793206235292834684, guid: d89d415b5ed410248b9bab5b8745a442, type: 3}
+  _canvas: {fileID: 4180170839091677942}
+  _addedTime: 3
+  _moveDist: 3
+  _fadeTime: 1
+  _scrollTime: 1.5
 --- !u!1 &8042368717055364991
 GameObject:
   m_ObjectHideFlags: 0

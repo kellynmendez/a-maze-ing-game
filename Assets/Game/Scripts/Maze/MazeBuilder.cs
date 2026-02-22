@@ -34,6 +34,7 @@ public class MazeBuilder : MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] List<GameObject> wallPrefabs;
     [SerializeField] List<GameObject> pillarPrefabs;
+    [SerializeField] GameObject carrotPrefab;
 
     private void Awake()
     {
@@ -48,6 +49,7 @@ public class MazeBuilder : MonoBehaviour
 
         InstantiateWallsAndPillars();
         BuildRooms();
+        SpawnCarrots();
     }
 
     private void InstantiateWallsAndPillars()
@@ -225,6 +227,26 @@ public class MazeBuilder : MonoBehaviour
                             ((cell.col * wallLength) + (cell.col * pillarDiameter) + (pillarDiameter / 2) + ((wallLength * cell.room.z) / 2) + ((pillarDiameter * cell.room.z) / 2))),
                         Quaternion.identity);
                 room.transform.parent = this.transform;
+            }
+        }
+    }
+
+    private void SpawnCarrots()
+    {
+        foreach (Cell cell in cellArray)
+        {
+            if (cell.available)
+            {
+                int rand = Random.Range(0, 2);
+                if (rand == 0)
+                {
+                    GameObject carrot = Instantiate(carrotPrefab,
+                        new Vector3(((cell.row * wallLength) + (cell.row * pillarDiameter) - (pillarDiameter / 2) + (wallLength / 2)),
+                                0,
+                                ((cell.col * wallLength) + (cell.col * pillarDiameter) + (pillarDiameter / 2) + (wallLength / 2))),
+                            Quaternion.identity);
+                    carrot.transform.parent = this.transform;
+                }
             }
         }
     }

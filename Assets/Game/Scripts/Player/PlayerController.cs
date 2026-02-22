@@ -1,14 +1,13 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] float mouseSensitivity = 2f;
-    [SerializeField] float MoveSpeed = 5f;
-    [SerializeField] float jumpForce = 10f;
-    [SerializeField] float upMultiplier = 2f;
-    [SerializeField] float downMultiplier = 2.5f;
+    [SerializeField] float speed = 5f;
+    [SerializeField] float jumpForce = 5f;
+    [SerializeField] float gravity = -9.8f;
     [SerializeField] CapsuleCollider capsuleCollider;
     [SerializeField] LayerMask groundLayer;
 
@@ -18,16 +17,9 @@ public class PlayerController : MonoBehaviour
     private float verticalRotation = 0f;
 
     // Ground Movement
-    private float moveHorizontal;
-    private float moveForward;
-
-    // Jumping
-    private Rigidbody rb;
-    private bool isGrounded = true;
-    private float groundCheckTimer = 0f;
-    private float groundCheckDelay = 0.3f;
-    private float playerHeight;
-    private float raycastDistance;
+    CharacterController characterController;
+    private Vector3 velocity;
+    float raycastDistance;
 
     // Utility
     private bool dead = false;
@@ -35,51 +27,56 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
         cameraTransform = Camera.main.transform;
-    }
+        characterController = GetComponent<CharacterController>();
+        dead = false;
+        won = false;
+}
 
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        playerHeight = capsuleCollider.height * transform.localScale.y;
+        float playerHeight = capsuleCollider.height * transform.localScale.y;
         raycastDistance = (playerHeight / 2) + 0.2f;
     }
 
     void Update()
     {
-        if (Input.GetButtonDown("Jump") && isGrounded && !dead && !won)
-        {
-            Jump();
-        }
-    }
+        float horizontalMove = Input.GetAxis("Horizontal");
+        float verticalMove = Input.GetAxis("Vertical");
 
-    void FixedUpdate()
-    {
-        moveHorizontal = Input.GetAxisRaw("Horizontal");
-        moveForward = Input.GetAxisRaw("Vertical");
+        Vector3 moveDirection = transform.forward * verticalMove + transform.right * horizontalMove;
+        moveDirection.Normalize();
 
         if (!dead && !won)
         {
             RotateCamera();
+            characterController.Move(moveDirection * speed * Time.deltaTime);
+        }
 
-            if (!isGrounded && groundCheckTimer <= 0f)
+        /*if (Input.GetKeyDown(KeyCode.Space) && IsGrounded() && !dead && !won)
+        {
+            velocity.y += jumpForce;
+        }
+        else
+        {
+            velocity.y += gravity * Time.deltaTime;
+        }*/
+
+        if (!dead && !won)
+        {
+            if (IsGrounded() && horizontalMove == 0 && verticalMove == 0)
             {
-                Vector3 rayOrigin = transform.position + Vector3.up * 0.1f;
-                isGrounded = Physics.Raycast(rayOrigin, Vector3.down, raycastDistance, groundLayer);
-            }
-            else
-            {
-                groundCheckTimer -= Time.deltaTime;
+                velocity = new Vector3(0, velocity.y, 0);
             }
 
-            MovePlayer();
+            characterController.Move(velocity * Time.deltaTime);
         }
     }
 
+    #region getters and setters
     public bool IsDead()
     {
         return dead;
@@ -100,46 +97,26 @@ public class PlayerController : MonoBehaviour
         return won;
     }
 
+    #endregion
+
     #region Movement
-    void MovePlayer()
+    
+    bool IsGrounded()
     {
-
-        Vector3 movement = (transform.right * moveHorizontal + transform.forward * moveForward).normalized;
-        Vector3 targetVelocity = movement * MoveSpeed;
-
-        rb.linearVelocity = new Vector3(
-            targetVelocity.x,
-            rb.linearVelocity.y,
-            targetVelocity.z
-        );
-
-        // jump gravity multipliers
-        if (rb.linearVelocity.y < 0)
-        {
-            rb.linearVelocity += Vector3.up * Physics.gravity.y * downMultiplier * Time.fixedDeltaTime;
-        }
-        else if (rb.linearVelocity.y > 0)
-        {
-            rb.linearVelocity += Vector3.up * Physics.gravity.y * upMultiplier * Time.fixedDeltaTime;
-        }
+        Vector3 rayOrigin = transform.position + Vector3.up * 0.1f;
+        return Physics.Raycast(rayOrigin, Vector3.down, raycastDistance, groundLayer);
     }
 
     void RotateCamera()
     {
-        float horizontalRotation = Input.GetAxis("Mouse X") * mouseSensitivity;
-        transform.Rotate(0, horizontalRotation, 0);
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        verticalRotation -= Input.GetAxis("Mouse Y") * mouseSensitivity;
-        verticalRotation = Mathf.Clamp(verticalRotation, -90f, 40f);
+        verticalRotation -= mouseY;
+        verticalRotation = Mathf.Clamp(verticalRotation, -40f, 60f);
 
-        cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
-    }
-
-    void Jump()
-    {
-        isGrounded = false;
-        groundCheckTimer = groundCheckDelay;
-        rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
+        cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
+        transform.Rotate(Vector3.up * mouseX);
     }
 
     #endregion

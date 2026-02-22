@@ -66,4 +66,4 @@ MonoBehaviour:
   - {fileID: 2471515192180859321, guid: 359b38befdff5b54884ae3028852b1e1, type: 3}
   pillarPrefabs:
   - {fileID: 2471515192180859321, guid: 9f39a5682b73ec54dbaab285d0297ab3, type: 3}
-  door: {fileID: 0}
+  carrotPrefab: {fileID: 7410645839899188526, guid: c152afb0898c6754fb3bd55c0152b27f, type: 3}
