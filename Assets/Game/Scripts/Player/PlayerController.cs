@@ -52,22 +52,20 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        
+        moveHorizontal = Input.GetAxisRaw("Horizontal");
+        moveForward = Input.GetAxisRaw("Vertical");
+
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            Jump();
+        }
     }
 
     void FixedUpdate()
     {
         if (!dead)
         {
-            moveHorizontal = Input.GetAxisRaw("Horizontal");
-            moveForward = Input.GetAxisRaw("Vertical");
-
             RotateCamera();
-
-            if (Input.GetButtonDown("Jump") && isGrounded)
-            {
-                Jump();
-            }
 
             if (!isGrounded && groundCheckTimer <= 0f)
             {
