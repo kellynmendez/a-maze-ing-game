@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump") && isGrounded && !dead && !won)
         {
             Jump();
         }
@@ -93,6 +93,11 @@ public class PlayerController : MonoBehaviour
     public void GameWon()
     {
         won = true;
+    }
+
+    public bool CheckWon()
+    {
+        return won;
     }
 
     #region Movement
