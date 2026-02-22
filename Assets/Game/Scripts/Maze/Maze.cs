@@ -335,6 +335,61 @@ public class Maze
         return borderCells[rand];
     }
 
+        DisjointSet checkDsMaze = new DisjointSet(numCells);
+
+        for (int r = 0; r < numRows; r++)
+        {
+            for (int c = 0; c < numCols; c++)
+            {
+                int cellIndex = numCols * r + c;
+
+                if (c - 1 >= 0 && !cellArray[r,c].left.exists)
+                {
+                    int leftIdx = numCols * r + (c - 1);
+                    int cellSet = checkDsMaze.find(cellIndex);
+                    int leftSet = checkDsMaze.find(leftIdx);
+                    if (cellSet != leftSet)
+                    {
+                        checkDsMaze.union(cellSet, leftSet);
+                    }
+                }
+
+                if (r - 1 < numRows && !cellArray[r, c].bottom.exists)
+                {
+                    int bottomIdx = numCols * (r + 1) + c;
+                    int cellSet = checkDsMaze.find(cellIndex);
+                    int bottomSet = checkDsMaze.find(bottomIdx);
+                    if (cellSet != bottomSet)
+                    {
+                        checkDsMaze.union(cellSet, bottomSet);
+                    }
+                }
+            }
+        }
+
+        int rootSet = checkDsMaze.find(0);
+
+        // Verify if every other cell is in the same set as the first cell
+        for (int r = 0; r < numRows; r++)
+        {
+            for (int c = 0; c < numCols; c++)
+            {
+                int cellIndex = numCols * r + c;
+                int cellSet = checkDsMaze.find(cellIndex);
+
+                if (cellSet != rootSet)
+                {
+                    Debug.LogError($"Maze is not valid! Cell at ({r}, {c}) is not connected to the rest of the maze.");
+                    PrintMaze();
+                    return false;
+                }
+            }
+        }
+
+        Debug.Log("Maze is valid!");
+        return true;
+    }
+
     private bool BuildMaze()
     {
         int numUnions = 0;
@@ -380,7 +435,40 @@ public class Maze
             doorCell.bottom.isDoor = true;
         }
 
-        return true;
+        bool doubleCheck = DoubleCheckMazeIsValid();
+
+        return doubleCheck;
+    }
+
+    public void PrintMaze()
+    {
+        string maze_str = "";
+        // Printing top of maze
+        for (int i = 0; i < numCols; i++)
+        {
+            maze_str += " _";
+        }
+        maze_str += "\n";
+
+        for (int r = 0; r < numRows; r++)
+        {
+            for (int c = 0; c < numCols; c++)
+            {
+                Cell cell = cellArray[r, c];
+                if (cell.left.exists == true && cell.bottom.exists == true)
+                    maze_str += "|_";
+                else if (cell.left.exists == false && cell.bottom.exists == true)
+                    maze_str += " _";
+                else if (cell.left.exists == true && cell.bottom.exists == false)
+                    maze_str += "| ";
+                else
+                    maze_str += "  ";
+            }
+            maze_str += "|\n";
+        }
+        maze_str += "\n\n";
+
+        Debug.Log(maze_str);
     }
 
 }
