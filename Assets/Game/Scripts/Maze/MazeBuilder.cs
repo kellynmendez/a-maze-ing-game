@@ -33,6 +33,7 @@ public class MazeBuilder : MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] GameObject wallPrefab;
     [SerializeField] GameObject pillarPrefab;
+    [SerializeField] GameObject doorPrefab;
 
     private void Awake()
     {
@@ -94,22 +95,48 @@ public class MazeBuilder : MonoBehaviour
                 
                 if (cell.bottom.exists == true)
                 {
-                    obj = Instantiate(wallPrefab,
+                    if (cell.bottom.isDoor == true)
+                    {
+                        Debug.Log("in bottom");
+                        obj = Instantiate(doorPrefab,
+                        new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
+                                    0,
+                                    (z * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
+                        Quaternion.Euler(0, -90, 0));
+                        obj.transform.parent = this.transform;
+                    }
+                    else
+                    {
+                        obj = Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (pillarDiameter / 2) + wallLength),
                                     0,
                                     (z * (wallLength + pillarDiameter) + (wallLength / 2) + pillarDiameter)),
                         Quaternion.Euler(0, Random.Range(0, 2) * 180f, 0));
-                    obj.transform.parent = this.transform;
+                        obj.transform.parent = this.transform;
+                    }
                 }
 
                 if (cell.left.exists == true)
                 {
-                    obj = Instantiate(wallPrefab,
+                    if (cell.left.isDoor == true)
+                    {
+                        Debug.Log("in left");
+                        obj = Instantiate(doorPrefab,
+                        new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
+                                    0,
+                                    (z * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
+                        Quaternion.Euler(0, 0, 0));
+                        obj.transform.parent = this.transform;
+                    }
+                    else
+                    {
+                        obj = Instantiate(wallPrefab,
                         new Vector3((x * (wallLength + pillarDiameter) + (wallLength / 2)),
                                     0,
                                     (z * (wallLength + pillarDiameter) + (pillarDiameter / 2))),
                         Quaternion.Euler(0, Random.Range(0, 2) * 180f + 90f, 0));
-                    obj.transform.parent = this.transform;
+                        obj.transform.parent = this.transform;
+                    }
                 }
             }
         }
