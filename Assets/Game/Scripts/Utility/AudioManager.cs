@@ -27,6 +27,11 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        PlayGameScore(mainMenuClip);
+    }
+
     public void PlayGameScore(AudioClip clip)
     {
         _audioSource.clip = clip;
@@ -35,13 +40,12 @@ public class AudioManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
-            if (SceneManager.GetActiveScene().name == "Controls")
+            if (SceneManager.GetActiveScene().name == "MainMenu")
             {
 
-                SceneManager.LoadScene("MainLevel");
-                Debug.Log("here");
+                SceneManager.LoadScene("MainPlayScene");
                 PlayGameScore(levelClip);
             }
             if (SceneManager.GetActiveScene().name == "Credits")
