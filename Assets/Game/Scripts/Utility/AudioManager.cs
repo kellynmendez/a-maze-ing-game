@@ -29,13 +29,26 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        PlayGameScore(mainMenuClip);
+        if (SceneManager.GetActiveScene().name == "MainMenu" ||
+            SceneManager.GetActiveScene().name == "Credits")
+        {
+            PlayGameScore(mainMenuClip);
+        }
+        else
+        {
+            PlayGameScore(levelClip);
+        }
     }
 
     public void PlayGameScore(AudioClip clip)
     {
         _audioSource.clip = clip;
         _audioSource.Play();
+    }
+
+    public void GoingToCredits()
+    {
+        PlayGameScore(mainMenuClip);
     }
 
     void Update()

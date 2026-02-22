@@ -10,12 +10,13 @@ public class Timer : MonoBehaviour
     [SerializeField] PlayerController player;
     [SerializeField] float timeValue = 30f;
     [SerializeField] TMP_Text timerText;
-    [SerializeField] Animation timerAnim;
     //UIController _uiController = null;
     private bool playerDead = false;
+    Color startColor;
 
     private void Awake()
     {
+        startColor = timerText.color;
         // Searching objects in scene for script of type UIController
         //_uiController = FindObjectOfType<UIController>();
     }
@@ -31,7 +32,6 @@ public class Timer : MonoBehaviour
             playerDead = player.IsDead();
             if (!playerDead)
             {
-                timerAnim.Play();
                 EndGame();
                 timeValue = 0;
             }
@@ -47,12 +47,14 @@ public class Timer : MonoBehaviour
             timeToDisplay = 0;
         }
 
-        timerText.text = string.Format("00:{0:00}", timeToDisplay);
+        int minutes = Mathf.FloorToInt(timeToDisplay / 60);
+        int seconds = Mathf.FloorToInt(timeToDisplay % 60);
+        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
 
         // When time is getting low, make timer more noticeable
         if (timeToDisplay < 10)
         {
-            timerText.color = Color.Lerp(Color.white, Color.red, Mathf.PingPong(Time.time, 1));
+            timerText.color = Color.Lerp(startColor, Color.red, Mathf.PingPong(Time.time, 1));
         }
     }
 
