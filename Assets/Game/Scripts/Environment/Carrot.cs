@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-public class Collectible : MonoBehaviour
+public class Carrot : MonoBehaviour
 {
     [Header("Feedback")]
     [SerializeField] AudioClip collectSFX = null;
-    [SerializeField] ParticleSystem collectParticle = null;
+    //[SerializeField] ParticleSystem collectParticle = null;
 
     [Header("Required References")]
     [SerializeField] Collider triggerToDisable = null;
@@ -25,15 +25,16 @@ public class Collectible : MonoBehaviour
         // disable relevant components for "Collection"
         triggerToDisable.enabled = false;
         artToDisable.SetActive(false);
+        PlayFX();
     }
 
     void PlayFX()
     {
         // play gfx
-        if (collectParticle != null)
+        /*if (collectParticle != null)
         {
             collectParticle.Play();
-        }
+        }*/
         // play sfx
         if (audioSource != null && collectSFX != null)
         {

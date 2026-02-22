@@ -30,12 +30,11 @@ public class PlayerController : MonoBehaviour
     private float raycastDistance;
 
     // Utility
-    private bool dead;
+    private bool dead = false;
+    private bool won = false;
 
     private void Awake()
     {
-        dead = false;
-
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         cameraTransform = Camera.main.transform;
@@ -63,7 +62,7 @@ public class PlayerController : MonoBehaviour
         moveHorizontal = Input.GetAxisRaw("Horizontal");
         moveForward = Input.GetAxisRaw("Vertical");
 
-        if (!dead)
+        if (!dead && !won)
         {
             RotateCamera();
 
@@ -91,6 +90,11 @@ public class PlayerController : MonoBehaviour
         dead = true;
     }
 
+    public void GameWon()
+    {
+        won = true;
+    }
+
     #region Movement
     void MovePlayer()
     {
@@ -103,11 +107,6 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity.y,
             targetVelocity.z
         );
-
-        /*if (isGrounded && moveHorizontal == 0 && moveForward == 0)
-        {
-            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
-        }*/
 
         // jump gravity multipliers
         if (rb.linearVelocity.y < 0)
@@ -126,7 +125,7 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(0, horizontalRotation, 0);
 
         verticalRotation -= Input.GetAxis("Mouse Y") * mouseSensitivity;
-        verticalRotation = Mathf.Clamp(verticalRotation, -90f, 30f);
+        verticalRotation = Mathf.Clamp(verticalRotation, -90f, 40f);
 
         cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
     }

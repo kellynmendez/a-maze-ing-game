@@ -21,6 +21,7 @@ public class MazeBuilder : MonoBehaviour
 
     private Maze maze;
     private Cell[,] cellArray;
+    private GameObject door;
 
     [Header("Maze Settings")]
     [SerializeField] int numRows = 5;
@@ -33,10 +34,10 @@ public class MazeBuilder : MonoBehaviour
     [Header("Prefabs")]
     [SerializeField] List<GameObject> wallPrefabs;
     [SerializeField] List<GameObject> pillarPrefabs;
-    [SerializeField] GameObject door;
 
     private void Awake()
     {
+        door = FindObjectsByType<Door>(FindObjectsSortMode.None)[0].gameObject;
         maze = new Maze(numRows, numColumns, rooms);
         cellArray = maze.cellArray;
     }

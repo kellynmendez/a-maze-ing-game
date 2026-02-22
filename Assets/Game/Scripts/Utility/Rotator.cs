@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Rotator : MonoBehaviour
 {
-    [SerializeField] Vector3 rotateForce = new Vector3(0, 100, 0);
+    [SerializeField] Vector3 rotateForce = new Vector3(0, 130, 0);
 
     void Update()
     {
