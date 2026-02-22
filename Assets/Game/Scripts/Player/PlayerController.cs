@@ -52,9 +52,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        moveHorizontal = Input.GetAxisRaw("Horizontal");
-        moveForward = Input.GetAxisRaw("Vertical");
-
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             Jump();
@@ -63,6 +60,9 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        moveHorizontal = Input.GetAxisRaw("Horizontal");
+        moveForward = Input.GetAxisRaw("Vertical");
+
         if (!dead)
         {
             RotateCamera();
