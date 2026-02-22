@@ -9,7 +9,6 @@ public class UpDownMove : MonoBehaviour
     void Awake()
     {
         startPosition = transform.position;
-        Debug.Log(startPosition);
     }
 
     void Update()

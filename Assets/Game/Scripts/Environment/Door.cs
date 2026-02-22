@@ -1,36 +1,51 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-public class Key : MonoBehaviour
+public class Door : MonoBehaviour
 {
+
+    [SerializeField] List<GameObject> locks;
+    [SerializeField] Collider openCollider;
+
     [Header("Feedback")]
     [SerializeField] AudioClip collectSFX = null;
     //[SerializeField] ParticleSystem collectParticle = null;
 
-    [Header("Required References")]
-    [SerializeField] Collider triggerToDisable = null;
-    [SerializeField] GameObject artToDisable = null;
-
-    AudioSource audioSource = null;
-    PlayerCollection player;
+    private bool doorOpened = false;
+    private AudioSource audioSource = null;
 
     private void Awake()
     {
-        player = FindObjectsByType<PlayerCollection>(FindObjectsSortMode.None)[0];
         audioSource = GetComponent<AudioSource>();
+        openCollider.enabled = false;
+    }
+    public void OpenDoor()
+    {
+        doorOpened = true;
+        openCollider.enabled = true;
+        PlayOpenFX();
+
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        player.AddKey();
-        triggerToDisable.enabled = false;
-        artToDisable.SetActive(false);
-        PlayFX();
+        Debug.Log("GAME WON!");
     }
 
-    void PlayFX()
+    public void KeyCollected()
+    {
+        foreach (GameObject go in locks)
+        {
+            if (go.activeSelf)
+            {
+                go.SetActive(false);
+                break;
+            }
+        }
+    }
+
+    void PlayOpenFX()
     {
         // play gfx
         /*if (collectParticle != null)
@@ -43,4 +58,5 @@ public class Key : MonoBehaviour
             audioSource.PlayOneShot(collectSFX, audioSource.volume);
         }
     }
+
 }
